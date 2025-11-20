@@ -1,0 +1,158 @@
+<template>
+  <div class="login-page">
+    <div class="login-container">
+    <img src="/images/pinup_logo.png" alt="PINUP 로고" class="logo" />
+
+    <h1>PIN-UP 로그인</h1>
+
+    <a href="http://localhost:8080/oauth2/authorization/google" style="text-decoration:none;">
+      <button class="google-btn">
+        <img
+            class="google-icon"
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google logo"
+        />
+        Google로 로그인
+      </button>
+    </a>
+
+    <a href="http://localhost:8080/oauth2/authorization/kakao" style="text-decoration:none;">
+      <button class="kakao-btn">
+        <img
+            class="kakao-icon"
+            src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png"
+            alt="Kakao logo"
+        />
+        Kakao로 로그인
+      </button>
+    </a>
+
+    <a href="http://localhost:8080/oauth2/authorization/naver" style="text-decoration:none;">
+      <button class="naver-btn">
+        <img
+            class="naver-icon"
+            src="/images/naver_icon.png"
+            alt="Naver logo"
+        />
+        Naver로 로그인
+      </button>
+    </a>
+
+    <p class="footer-text">
+      PIN-UP에 처음이신가요?
+      <span>Google, Kakao 또는 Naver로 시작하세요.</span>
+    </p>
+
+    <!-- 여기만 SPA 라우터로 변경 -->
+    <router-link to="/admin/login" class="admin-link">
+      관리자 로그인
+    </router-link>
+  </div>
+  </div>
+</template>
+
+<script setup>
+
+</script>
+
+<style scoped>
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pretendard', sans-serif;
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
+}
+
+.login-container {
+  background: white;
+  border-radius: 20px;
+  padding: 50px 40px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+.login-container h1 {
+  font-size: 26px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.google-btn, .kakao-btn, .naver-btn {
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  margin-bottom: 15px;
+}
+
+.google-btn {
+  background-color: #4285F4;
+  color: white;
+}
+
+.google-btn:hover {
+  background-color: #3367D6;
+}
+
+.kakao-btn {
+  background-color: #FEE500;
+  color: #3C1E1E;
+}
+
+.kakao-btn:hover {
+  background-color: #e6cc00;
+}
+
+.naver-btn {
+  background-color: #03C75A;
+  color: white;
+}
+
+.naver-btn:hover {
+  background-color: #02b34f;
+}
+
+.google-icon, .kakao-icon, .naver-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: #777;
+  margin-top: 25px;
+}
+
+.footer-text span {
+  color: #333;
+  font-weight: 500;
+}
+
+.admin-link {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.admin-link:hover {
+  color: #000;
+  text-decoration: underline;
+}
+</style>

@@ -1,0 +1,43 @@
+/* 기본 박스 모델 설정 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #app {
+    height: 100%;
+}
+
+/* 브라우저 기본 margin 제거 (가장 중요) */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Pretendard', sans-serif;
+    background-color: #F5F5F5; /* 홈 화면 기본 배경 */
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+/* 링크 스타일 초기화 */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 리스트 초기화 */
+ul, li {
+    list-style: none;
+}
+
+/* 버튼 초기화 */
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* 이미지가 박스에서 넘치지 않도록 */
+img {
+    max-width: 100%;
+    display: block;
+}
