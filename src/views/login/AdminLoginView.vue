@@ -30,20 +30,30 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import router from "@/router/index.js";
 
 const username = ref("");
 const password = ref("");
 
-// 실제 Spring Boot 관리자 로그인 API 호출
+// 관리자 로그인 API 호출
 const login = async () => {
   try {
-    const res = await axios.post("http://localhost:8080/api/admin/login", {
-      name: username.value,
-      password: password.value,
-    });
+    const formData = new FormData();
+    formData.append("username", username.value);
+    formData.append("password", password.value);
 
-    alert("로그인 성공!");
-    // localStorage.setItem("admin_token", res.data.token);
+    const res = await axios.post(
+        "http://localhost:8080/admin/login",
+        formData,
+        {
+          withCredentials: true,
+        }
+    );
+
+    if (res.data.success) {
+      router.push("/admin/dashboard");
+    }
+
   } catch (e) {
     alert("로그인 실패!");
   }
