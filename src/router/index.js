@@ -12,6 +12,7 @@ import MyPageView from '@/views/user/MyPageView.vue'
 // 관리자 영역
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminUsersView from "@/views/admin/AdminUsersView.vue";
+import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
 
 const routes = [
     // 사용자 로그인
@@ -33,6 +34,12 @@ const routes = [
         children: [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
+            // feeds
+            {
+                path: '/feeds',
+                name : 'feeds',
+                component : FeedsHomeView
+            },
         ]
     },
 
