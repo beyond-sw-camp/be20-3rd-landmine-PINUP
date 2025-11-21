@@ -209,4 +209,37 @@ const toggleNotif = () => {
     flex-wrap: wrap;
   }
 }
+
+/* 사이드바 반응형 */
+@media (max-width: 1080px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 14px 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0 0 20px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-item {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  body {
+    padding-top: 90px;
+  }
+}
 </style>

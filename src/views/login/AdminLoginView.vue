@@ -20,7 +20,7 @@
       <button type="submit">로그인</button>
     </form>
 
-    <router-link to="/" class="back-link">
+    <router-link to="/login" class="back-link">
       ← 사용자 로그인 페이지로 돌아가기
     </router-link>
   </div>
@@ -84,11 +84,12 @@ const login = async () => {
 .logo {
   width: 150px;
   height: auto;
-  margin-bottom: 10px;
+  display: block;
+  margin: 0 auto 10px;
 }
 
 h2 {
-  margin: 10px 0 30px;
+  margin: 10px 0 10px;
   font-size: 24px;
   color: #333;
 }
