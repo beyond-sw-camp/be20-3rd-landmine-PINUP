@@ -63,14 +63,16 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import AdminSidebar from "@/components/AdminSidebar.vue";
+import router from "@/router/index.js";
+import axiosInstance from "@/api/axios.js";
+import {
+  fetchUsers,
+  suspendUser as apiSuspendUser,
+  activateUser as apiActivateUser,
+  deleteUser as apiDeleteUser
+} from "@/api/UserAdminApi.js";
 
-// Mock 데이터 (API 연결 전)
-const users = ref([
-  { userId: 1, name: "홍길동", nickname: "gildong", email: "gil@example.com", status: "ACTIVE" },
-  { userId: 2, name: "김철수", nickname: "chul", email: "chul@example.com", status: "SUSPENDED" },
-  { userId: 3, name: "이영희", nickname: "heehee", email: "hee@example.com", status: "ACTIVE" },
-]);
-
+const users = ref([]);
 const filter = ref("ALL");
 
 // 필터된 유저 목록
@@ -84,39 +86,31 @@ function filterStatus(type) {
   filter.value = type;
 }
 
-// API 함수 임포트 (충돌 방지 위해 이름 변경)
-import {
-  fetchUsers,
-  suspendUser as apiSuspendUser,
-  activateUser as apiActivateUser,
-  deleteUser as apiDeleteUser
-} from "@/api/UserAdminApi.js";
-import router from "@/router/index.js";
-import axios from "axios";
-
-// 사용자 리스트 다시 불러오기
-async function reloadUsers() {
-  users.value = await fetchUsers();
-}
-
-// 첫 로드 시 데이터 로드
+// 첫 로드 시 전체 회원 조회
 onMounted(async () => {
   users.value = await fetchUsers();
 });
 
-// UI에서 호출되는 액션 핸들러
+// 사용자 리스트 다시 로드
+async function reloadUsers() {
+  users.value = await fetchUsers();
+}
+
+// 정지
 async function handleSuspend(id) {
   await apiSuspendUser(id);
   alert("정지 완료!");
   reloadUsers();
 }
 
+// 활성화
 async function handleActivate(id) {
   await apiActivateUser(id);
   alert("활성화 완료!");
   reloadUsers();
 }
 
+// 삭제
 async function handleDelete(id) {
   if (!confirm("정말 삭제하시겠습니까?")) return;
   await apiDeleteUser(id);
@@ -126,13 +120,10 @@ async function handleDelete(id) {
 
 // 관리자 로그아웃
 async function adminLogout() {
-  await axios.post("http://localhost:8080/admin/logout");
-
+  await axiosInstance.post("/admin/logout");
   localStorage.removeItem("adminToken");
-
-  window.location.href = "/admin/login";
+  router.push("/admin/login");
 }
-
 </script>
 
 <style scoped>
