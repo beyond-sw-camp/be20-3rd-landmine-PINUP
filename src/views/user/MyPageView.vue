@@ -73,7 +73,9 @@
           <div class="points-sub">방문 인증, 피드 작성 등으로 적립됩니다.</div>
 
           <div class="points-actions">
-            <div class="points-pill">포인트 사용 내역 상세보기</div>
+            <button class="points-pill" @click="goToPointHistory">
+              포인트 사용 내역 상세보기
+            </button>
           </div>
         </div>
       </section>
@@ -187,6 +189,7 @@
 import {ref, reactive, onMounted} from "vue";
 import Sidebar from "@/components/Sidebar.vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 const user = reactive({
   name: "",
@@ -200,8 +203,12 @@ const user = reactive({
 });
 
 // 포인트
+const router = useRouter();
 const totalPoints = ref(0);
-
+// 포인트 사용 내역 페이지로 이동
+function goToPointHistory() {
+  router.push("/points");
+}
 // 내 피드
 const feeds = ref([]);
 
@@ -455,6 +462,9 @@ async function saveEdit() {
   border-radius: 999px;
   font-size: 10px;
   background: rgba(255, 255, 255, 0.14);
+  border: none;           /* 버튼 테두리 제거 */
+  cursor: pointer;        /* 손가락 커서 */
+  color: inherit;         /* 텍스트 색 유지 */
 }
 
 /* 두 번째 줄: 지도 + 통계/기록 */
