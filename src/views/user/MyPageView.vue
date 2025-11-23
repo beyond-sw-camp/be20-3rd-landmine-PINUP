@@ -73,8 +73,6 @@
           <div class="points-sub">방문 인증, 피드 작성 등으로 적립됩니다.</div>
 
           <div class="points-actions">
-            <div class="points-pill">이번 달 적립: +1,320P</div>
-            <div class="points-pill">다음 등급까지: 2,520P</div>
             <div class="points-pill">포인트 사용 내역 상세보기</div>
           </div>
         </div>
