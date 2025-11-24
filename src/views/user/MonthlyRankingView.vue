@@ -191,7 +191,10 @@ async function loadRanking(year, month) {
   rankError.value = ''
 
   try {
-    const res = await fetch(`/ranks/monthly?year=${year}&month=${month}`)
+    const res = await fetch(
+        `http://localhost:8080/ranks/monthly?year=${year}&month=${month}`,
+        { credentials: 'include' }   // 세션/쿠키 쓰면 추가
+    )
     if (!res.ok) {
       throw new Error('랭킹 조회 실패')
     }
@@ -215,7 +218,8 @@ async function loadMyRanking(year, month) {
   try {
     // ⚠️ 현재는 TEMP_USER_ID 사용 (백엔드에서 userId 내려주면 user.value.id로 교체)
     const res = await fetch(
-        `/ranks/monthly/me?year=${year}&month=${month}&userId=${TEMP_USER_ID}`,
+        `http://localhost:8080/ranks/monthly/me?year=${year}&month=${month}&userId=${TEMP_USER_ID}`,
+        { credentials: 'include' }
     )
     if (!res.ok) {
       throw new Error('내 랭킹 조회 실패')
@@ -254,7 +258,7 @@ onMounted(async () => {
   selectedYearMonth.value = `${yyyy}-${mm}`
 
   // 2. 사용자 정보 로드
-  await loadUser()
+  //await loadUser()
 
   // 3. 월간 랭킹 로드
   await loadForMonth(yyyy, Number(mm))
