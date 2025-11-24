@@ -202,12 +202,12 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  margin-right: 8px;
+  font-size: 14px;
+  padding: 8px 18px;
 }
 .back-btn:hover {
   transform: translateY(-1px);
@@ -224,8 +224,9 @@ onMounted(() => {
 /* 포인트 로그 테이블 카드 */
 .table-card {
   background: #fff;
-  border-radius: 20px;
-  padding: 18px 22px 22px;
+  border-radius: 26px;
+  padding: 24px 32px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
 }
@@ -262,15 +263,15 @@ tbody tr:nth-child(even) {
 /* 내 포인트 카드 */
 .point-summary-card {
   background: linear-gradient(135deg, #007bff, #12c2e9, #4facfe);
-  border-radius: 24px;
-  padding: 22px 22px 24px;
+  border-radius: 26px;
+  padding: 24px 32px;
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 220px;
   align-self: flex-start;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
 }
 .point-summary-title {
   font-size: 14px;
