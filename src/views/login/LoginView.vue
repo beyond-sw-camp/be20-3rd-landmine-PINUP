@@ -76,13 +76,14 @@
 .logo {
   width: 200px;
   height: auto;
-  margin-bottom: 5px;
+  display: block;
+  margin: 0 auto 10px;
 }
 
 .login-container h1 {
   font-size: 26px;
   color: #333;
-  margin-bottom: 30px;
+  margin: 20px 0 20px 0;
 }
 
 .google-btn, .kakao-btn, .naver-btn {
