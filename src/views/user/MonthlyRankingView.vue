@@ -258,7 +258,7 @@ onMounted(async () => {
   selectedYearMonth.value = `${yyyy}-${mm}`
 
   // 2. 사용자 정보 로드
-  //await loadUser()
+  await loadUser()
 
   // 3. 월간 랭킹 로드
   await loadForMonth(yyyy, Number(mm))
