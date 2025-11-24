@@ -18,21 +18,19 @@
           <tr>
             <th>ID</th>
             <th>제목</th>
-            <th>작성자</th>
             <th>작성일</th>
             <th>관리</th>
           </tr>
           </thead>
 
           <tbody>
-          <tr v-for="notice in notices" :key="notice.id">
-            <td>{{ notice.id }}</td>
-            <td>{{ notice.title }}</td>
-            <td>{{ notice.author }}</td>
+          <tr v-for="notice in notices" :key="notice.noticeId" @click="goToNoticeDetail(notice.noticeId)" style="cursor: pointer;">
+            <td>{{ notice.noticeId }}</td>
+            <td>{{ notice.noticeTitle }}</td>
             <td>{{ notice.createdAt }}</td>
             <td>
-              <button class="manage-btn edit" @click="editNotice(notice.id)">수정</button>
-              <button class="manage-btn delete" @click="deleteNotice(notice.id)">삭제</button>
+              <button class="manage-btn edit" @click.stop="editNotice(notice.noticeId)">수정</button>
+              <button class="manage-btn delete" @click.stop="deleteNotice(notice.noticeId)">삭제</button>
             </td>
           </tr>
           </tbody>
@@ -43,18 +41,22 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router';
 import AdminSidebar from "@/components/AdminSidebar.vue";
+import noticeApi from '@/api/notice';
 
 const router = useRouter();
+const notices = ref([]);
 
-// Mock 데이터 (API 연결 전)
-const notices = ref([
-  { id: 3, title: "서버 점검 안내 (11/25)", author: "관리자", createdAt: "2025-11-24" },
-  { id: 2, title: "v1.1 업데이트 안내", author: "관리자", createdAt: "2025-11-20" },
-  { id: 1, title: "PINUP 서비스 정식 오픈!", author: "관리자", createdAt: "2025-11-15" },
-]);
+async function loadNotices() {
+  try {
+    const response = await noticeApi.getNotices();
+    notices.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch (error) {
+    console.error("공지사항을 불러오는 중 오류가 발생했습니다.", error);
+  }
+}
 
 function goToDashboard() {
   router.push('/admin/dashboard');
@@ -64,15 +66,24 @@ function goToCreateNotice() {
   router.push('/admin/notices/post');
 }
 
-function editNotice(id) {
-  alert(`공지사항 ${id} 수정`);
-  // TODO: 수정 페이지로 이동 또는 모달 열기
+function goToNoticeDetail(id) {
+  router.push(`/admin/notices/${id}`);
 }
 
-function deleteNotice(id) {
+function editNotice(id) {
+  router.push(`/admin/notices/edit/${id}`);
+}
+
+async function deleteNotice(id) {
   if (confirm(`공지사항 ${id}을(를) 정말 삭제하시겠습니까?`)) {
-    alert(`공지사항 ${id} 삭제`);
-    // TODO: API 호출로 삭제 처리
+    try {
+      await noticeApi.deleteNotice(id);
+      alert(`공지사항 ${id}이(가) 삭제되었습니다.`);
+      await loadNotices(); // 목록 새로고침
+    } catch (error) {
+      console.error(`공지사항(id: ${id}) 삭제 중 오류가 발생했습니다.`, error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
   }
 }
 
@@ -80,6 +91,8 @@ function deleteNotice(id) {
 function logout() {
   window.location.href = "/logout";
 }
+
+onMounted(loadNotices);
 </script>
 
 <style scoped>

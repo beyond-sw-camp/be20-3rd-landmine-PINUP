@@ -10,16 +10,14 @@
         <tr>
           <th>ID</th>
           <th>제목</th>
-          <th>작성자</th>
           <th>작성일</th>
         </tr>
         </thead>
 
         <tbody>
-        <tr v-for="notice in notices" :key="notice.id" @click="goToNoticeDetail(notice.id)">
-          <td>{{ notice.id }}</td>
-          <td>{{ notice.title }}</td>
-          <td>{{ notice.author }}</td>
+        <tr v-for="notice in notices" :key="notice.noticeId" @click="goToNoticeDetail(notice.noticeId)">
+          <td>{{ notice.noticeId }}</td>
+          <td>{{ notice.noticeTitle }}</td>
           <td>{{ notice.createdAt }}</td>
         </tr>
         </tbody>
@@ -29,21 +27,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router';
+import noticeApi from '@/api/notice';
 
 const router = useRouter();
+const notices = ref([]);
 
-// Mock 데이터 (API 연결 전)
-const notices = ref([
-  { id: 3, title: "서버 점검 안내 (11/25)", author: "관리자", createdAt: "2025-11-24" },
-  { id: 2, title: "v1.1 업데이트 안내", author: "관리자", createdAt: "2025-11-20" },
-  { id: 1, title: "PINUP 서비스 정식 오픈!", author: "관리자", createdAt: "2025-11-15" },
-]);
+async function loadNotices() {
+  try {
+    const response = await noticeApi.getNotices();
+    notices.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch (error) {
+    console.error("공지사항을 불러오는 중 오류가 발생했습니다.", error);
+  }
+}
 
 function goToNoticeDetail(id) {
   router.push(`/notices/${id}`);
 }
+
+onMounted(loadNotices);
 </script>
 
 <style scoped>

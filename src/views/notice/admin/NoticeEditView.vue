@@ -3,12 +3,12 @@
     <AdminSidebar />
     <main class="main">
       <div class="topbar">
-        <div class="topbar-title">📢 공지사항 작성</div>
+        <div class="topbar-title">📢 공지사항 수정</div>
         <button class="logout-btn" @click="logout">로그아웃</button>
       </div>
 
       <section class="table-card">
-        <form @submit.prevent="createNotice" class="form-container">
+        <form @submit.prevent="updateNotice" class="form-container">
           <div class="form-group">
             <input type="text" id="title" class="form-control" v-model="notice.noticeTitle" placeholder="공지사항 제목을 입력하세요" required>
           </div>
@@ -16,7 +16,7 @@
             <textarea id="content" class="form-control" rows="10" v-model="notice.noticeContent" placeholder="공지사항 내용을 입력하세요" required></textarea>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-save">등록</button>
+            <button type="submit" class="btn btn-save">수정</button>
             <button type="button" class="btn btn-cancel" @click="goToNoticeList">취소</button>
           </div>
         </form>
@@ -26,32 +26,43 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 import AdminSidebar from "@/components/AdminSidebar.vue";
 import noticeApi from '@/api/notice';
 
+const route = useRoute();
 const router = useRouter();
-
 const notice = ref({
-  adminId: 1, // TODO: 실제 로그인된 관리자 ID로 교체해야 합니다.
+  noticeId: null,
   noticeTitle: '',
   noticeContent: ''
 });
 
-async function createNotice() {
+const noticeId = route.params.id;
+
+async function loadNotice() {
+  try {
+    const response = await noticeApi.getNoticeById(noticeId);
+    notice.value = response.data;
+  } catch (error) {
+    console.error("공지사항 정보를 불러오는 중 오류가 발생했습니다.", error);
+  }
+}
+
+async function updateNotice() {
   if (!notice.value.noticeTitle.trim() || !notice.value.noticeContent.trim()) {
     alert("제목과 내용을 모두 입력해주세요.");
     return;
   }
 
   try {
-    await noticeApi.createNotice(notice.value);
-    alert("공지사항이 성공적으로 등록되었습니다.");
+    await noticeApi.updateNotice(notice.value);
+    alert("공지사항이 성공적으로 수정되었습니다.");
     router.push('/admin/notices');
   } catch (error) {
-    console.error("공지사항 등록 중 오류가 발생했습니다.", error);
-    alert("등록 중 오류가 발생했습니다.");
+    console.error("공지사항 수정 중 오류가 발생했습니다.", error);
+    alert("수정 중 오류가 발생했습니다.");
   }
 }
 
@@ -62,6 +73,8 @@ function goToNoticeList() {
 function logout() {
   window.location.href = "/logout";
 }
+
+onMounted(loadNotice);
 </script>
 
 <style scoped>

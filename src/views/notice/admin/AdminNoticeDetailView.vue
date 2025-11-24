@@ -1,36 +1,41 @@
 <template>
-  <main class="main">
-    <div class="topbar">
-      <div class="topbar-title">📢 공지사항 상세</div>
-    </div>
+  <div class="layout">
+    <AdminSidebar />
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title">📢 공지사항 상세</div>
+        <button class="logout-btn" @click="logout">로그아웃</button>
+      </div>
 
-    <section v-if="notice" class="table-card">
-      <hr class="notice-top-divider">
-      <div class="notice-detail-header">
-        <h2 class="notice-title">{{ notice.noticeTitle }}</h2>
-        <div class="notice-meta">
-          <span>관리자 {{ notice.adminId }}</span> |
-          <span>{{ notice.createdAt }}</span>
+      <section v-if="notice" class="table-card">
+        <hr class="notice-top-divider">
+        <div class="notice-detail-header">
+          <h2 class="notice-title">{{ notice.noticeTitle }}</h2>
+          <div class="notice-meta">
+            <span>관리자 {{ notice.adminId }}</span> |
+            <span>{{ notice.createdAt }}</span>
+          </div>
         </div>
-      </div>
-      <hr class="notice-bottom-divider">
-      <div class="notice-content">
-        <p>{{ notice.noticeContent }}</p>
-      </div>
+        <hr class="notice-bottom-divider">
+        <div class="notice-content">
+          <p>{{ notice.noticeContent }}</p>
+        </div>
 
-      <div class="form-actions">
-        <button class="btn btn-cancel" @click="goToNoticeList">목록으로</button>
+        <div class="form-actions">
+          <button class="btn btn-cancel" @click="goToNoticeList">목록으로</button>
+        </div>
+      </section>
+      <div v-else>
+        공지사항을 불러오는 중입니다...
       </div>
-    </section>
-    <div v-else>
-      공지사항을 불러오는 중입니다...
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from 'vue-router';
+import AdminSidebar from "@/components/AdminSidebar.vue";
 import noticeApi from '@/api/notice';
 
 const route = useRoute();
@@ -44,18 +49,28 @@ async function loadNoticeDetail() {
     notice.value = response.data;
   } catch (error) {
     console.error(`공지사항(id: ${noticeId})을 불러오는 중 오류가 발생했습니다.`, error);
-    // Optionally, redirect to a not-found page or show an error message
   }
 }
 
 function goToNoticeList() {
-  router.push('/notices');
+  router.push('/admin/notices');
+}
+
+function logout() {
+  window.location.href = "/logout";
 }
 
 onMounted(loadNoticeDetail);
 </script>
 
 <style scoped>
+* { box-sizing: border-box; }
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
 .main {
   flex: 1;
   padding: 32px;
@@ -68,13 +83,24 @@ onMounted(loadNoticeDetail);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .topbar-title {
   font-size: 24px;
   font-weight: 700;
 }
+
+.logout-btn {
+  background: #E74C3C;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 600;
+}
+.logout-btn:hover { background: #c0392b; }
 
 .table-card {
   background: #ffffff;
@@ -150,5 +176,4 @@ onMounted(loadNoticeDetail);
 .btn-cancel:hover {
   background: linear-gradient(135deg, #777, #555);
 }
-
 </style>
