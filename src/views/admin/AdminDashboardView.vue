@@ -5,7 +5,7 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-title">👩‍💻 관리자 대시보드</div>
-        <button class="logout-btn" @click="logout">로그아웃</button>
+        <button class="logout-btn" @click="adminLogout">로그아웃</button>
       </div>
 
       <!-- 통계 -->
@@ -60,6 +60,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import AdminSidebar from "@/components/AdminSidebar.vue";
+import router from "@/router/index.js";
+import axios from "axios";
 
 // 통계 데이터
 const stats = ref({
@@ -108,9 +110,15 @@ onMounted(() => {
   ];
 });
 
-function logout() {
-  window.location.href = "/logout";
+// 관리자 로그아웃
+async function adminLogout() {
+  await axios.post("http://localhost:8080/admin/logout");
+
+  localStorage.removeItem("adminToken");
+
+  window.location.href = "/admin/login";
 }
+
 </script>
 
 <style scoped>
