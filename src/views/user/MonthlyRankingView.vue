@@ -105,9 +105,7 @@
     </section>
   </div>
 </template>
-//GET /ranks/monthly/me?year=YYYY&month=M&userId=???
-//이렇게 생긴 내 랭킹 조회. 근데, /api/user/me를 호출하면 오는 정보에 userid가 있는지 모름.
-// 노션 페이지가 안 열려서, 차후 확인 필요. 내 랭킹 조회 부분 수정 필요.
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -338,8 +336,9 @@ onMounted(async () => {
 /* 랭킹 테이블 카드 */
 .table-card {
   background: #ffffff;
-  border-radius: 18px;
-  padding: 24px;
+  border-radius: 26px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -373,8 +372,9 @@ tbody tr:nth-child(even) {
 /* 내 랭킹 카드 */
 .my-rank-card {
   background: linear-gradient(135deg, #007bff, #12c2e9, #4facfe);
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 26px;
+  padding: 24px 32px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -408,7 +408,7 @@ tbody tr:nth-child(even) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 14px;
 }
 .back-btn:hover {
   transform: translateY(-1px);
