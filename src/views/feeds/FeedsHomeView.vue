@@ -8,7 +8,7 @@
     <!-- 상단 버튼만 있는 심플 바 -->
     <div class="feed-top-bar">
       <div class="feed-top-left">
-        📷 피드
+        피드
       </div>
 
       <el-button type="primary" @click="goToWrite">

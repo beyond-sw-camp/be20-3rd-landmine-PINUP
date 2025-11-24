@@ -2,7 +2,7 @@
     padding: 24px 32px;
 }
 
-/* 960px 이하일 때는 조금 줄임 */
+
 @media (max-width: 960px) {
     .feed-page {
         padding: 16px 18px;
@@ -11,7 +11,7 @@
 
 .feed-top-bar {
     display: flex;
-    justify-content: space-between; /* 좌: 이모지+피드 / 우: 버튼 */
+    justify-content: space-between;
     align-items: center;
     padding: 0 4px 16px;
     height: 48px;
@@ -27,7 +27,6 @@
     gap: 6px;
 }
 
-/* 버튼 스타일 튜닝 (Element Plus 기본보다 살짝 부드럽게) */
 .feed-top-bar .el-button {
     height: 36px;
     padding: 0 18px;
@@ -36,14 +35,12 @@
     font-weight: 500;
 }
 
-/* 피드 카드 그리드 (4열 기준) */
 .feed-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 24px;
 }
 
-/* 피드 카드 기본 스타일 */
 .feed-card {
     background: var(--pinup-card-bg);
     border-radius: 18px;
@@ -76,7 +73,6 @@
     gap: 8px;
 }
 
-/* 제목 / 설명 */
 .feed-card__title {
     font-size: 15px;
     font-weight: 600;
@@ -89,7 +85,6 @@
     color: var(--pinup-text-sub);
 }
 
-/* 유저 + 좋아요 라인 */
 .feed-card__footer {
     display: flex;
     align-items: center;
@@ -127,7 +122,6 @@
     color: #f97373;
 }
 
-/* 무한스크롤 로딩 / 끝 메시지 */
 .feed-loading,
 .feed-end {
     margin-top: 20px;
@@ -136,7 +130,6 @@
     color: var(--pinup-text-sub);
 }
 
-/* 피드 쓰기/수정 폼 공통 레이아웃 */
 .feed-form {
     margin-top: 16px;
     background: var(--pinup-card-bg);
@@ -172,7 +165,6 @@
     max-width: 640px;
 }
 
-/* 이미지 업로드 영역 예시 */
 .feed-upload-area {
     border-radius: 14px;
     border: 1px dashed #cbd5f5;
@@ -183,7 +175,6 @@
     color: var(--pinup-text-sub);
 }
 
-/* 반응형: 화면 좁아지면 3열 → 2열 → 1열 */
 @media (max-width: 1280px) {
     .feed-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
