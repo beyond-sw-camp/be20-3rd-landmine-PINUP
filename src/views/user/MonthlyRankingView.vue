@@ -269,8 +269,6 @@ onMounted(async () => {
 .ranking-page {
   width: 100%;
   padding: 32px 40px;
-  /* AppLayout 배경이 이미 있다면 이 줄은 조정해도 됨 */
-  background: #e5e5e5;
 }
 
 .panel {
