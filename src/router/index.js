@@ -25,6 +25,8 @@ import PointHistoryView from "@/views/user/PointHistoryView.vue";
 // feeds 영역
 import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
 import FeedsWriteView from "@/views/feeds/FeedsWriteView.vue";
+import ReportListView from '@/views/report/ReportListView.vue'
+import ReportHandleView from '@/views/report/ReportHandleView.vue'
 
 const routes = [
     // 사용자 로그인
@@ -72,7 +74,9 @@ const routes = [
             { path: 'notices', component: NoticeManageView },
             { path: 'notices/post', component: NoticePostView },
             { path: 'notices/edit/:id', component: NoticeEditView },
-            { path: 'notices/:id', component: AdminNoticeDetailView }
+            { path: 'notices/:id', component: AdminNoticeDetailView },
+            { path: 'reports', component: ReportListView },
+            { path: 'reports/:id', component: ReportHandleView },
         ]
     }
 ]
