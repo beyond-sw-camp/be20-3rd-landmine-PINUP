@@ -393,14 +393,16 @@ onMounted(() => {
 
 .ranking-more-btn {
   float: right;
-  background: transparent;
+  background: #1A8CFF;
   border: none;
-  color: #1A8CFF;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
 }
 .ranking-more-btn:hover {
-  text-decoration: underline;
+  background: #0079e6;
 }
 /* 랭킹 & 공지사항 공통 */
 .ranking-table th,
