@@ -1,14 +1,10 @@
 <template>
   <div class="point-page">
-    <section class="panel">
-      <!-- 상단 제목 + 뒤로가기 -->
-      <header class="panel-header">
-        <div class="panel-title">
-          <button class="back-btn" @click="goBack">←</button>
-          <span class="emoji">💰</span>
-          <span>나의 포인트 사용 내역</span>
-        </div>
-      </header>
+    <!-- 상단 제목 + 뒤로가기 -->
+    <button class="back-btn" @click="goBack">←</button>
+    <span class="emoji">💰</span>
+    <span>나의 포인트 사용 내역</span>
+  </div>
 
       <!-- 내용 행: 테이블 + 요약 카드 -->
       <div class="content-row">
@@ -169,29 +165,6 @@ onMounted(() => {
   width: 100%;
   padding: 32px 40px;
   background: #dcdcdc;
-}
-
-/* 패널 */
-.panel {
-  background: #f9fbff;
-  border-radius: 32px;
-  padding: 32px 36px;
-  min-height: calc(100vh - 64px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-header {
-  margin-bottom: 24px;
-}
-
-.panel-title {
-  font-size: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .panel-title .emoji {
