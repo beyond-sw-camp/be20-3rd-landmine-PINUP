@@ -68,8 +68,7 @@
           </p>
         </aside>
       </div>
-    </section>
-  </div>
+
 </template>
 
 <script setup>
@@ -162,9 +161,10 @@ onMounted(() => {
 }
 
 .point-page {
-  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 32px 40px;
-  background: #dcdcdc;
+  background: transparent;
 }
 
 .panel-title .emoji {
@@ -174,28 +174,28 @@ onMounted(() => {
 /* 뒤로가기 버튼 */
 .back-btn {
   border: none;
-  background: #ffffff;
+  background: #E9E6FF;
+  color: #4A45A3;
   border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  padding: 8px 18px;
+  font-size: 13px;
 }
-.back-btn:hover {
-  transform: translateY(-1px);
+.back-btn:hover:not(:disabled) {
+  background: #D6D0FF;
 }
-
 /* 레이아웃 */
 .content-row {
   display: grid;
   grid-template-columns: 3fr 1.3fr;
   gap: 24px;
   flex: 1;
+  max-width: 1000px;
+  margin: 16px auto 0;
 }
 
 /* 포인트 로그 테이블 카드 */
@@ -281,11 +281,6 @@ tbody tr:nth-child(even) {
 @media (max-width: 960px) {
   .point-page {
     padding: 20px;
-  }
-  .panel {
-    padding: 20px;
-    border-radius: 24px;
-    min-height: auto;
   }
   .content-row {
     grid-template-columns: 1fr;
