@@ -94,19 +94,13 @@
           </tr>
           </thead>
           <tbody>
-          <!-- 1) 데이터 없을 때 표시 -->
-          <tr v-if="notices.length === 0">
-            <td colspan="2">공지사항을 불러오는 중...</td>
-          </tr>
-
-          <!-- 2) 데이터 있을 때 출력 -->
           <tr
               v-for="n in notices"
-              :key="n.id"
-              @click="openNotice(n.id)"
+              :key="n.noticeId"
+              @click="openNotice(n.noticeId)"
               style="cursor: pointer;"
           >
-            <td>{{ n.title }}</td>
+            <td>{{ n.noticeTitle }}</td>
             <td>{{ formatDate(n.createdAt) }}</td>
           </tr>
           </tbody>
@@ -211,29 +205,18 @@ const notices = ref([]);
 
 const loadNotices = async () => {
   try {
-    const res = await fetch("/api/notices/latest?limit=3");
+    const res = await fetch("http://localhost:8080/api/notices/latest?limit=2", {
+      credentials: "include"
+    });
+    console.log("📌 공지 응답:", notices.value);
 
-    if (!res.ok) {
-      throw new Error("공지사항 API 호출 실패");
-    }
+
+    if (!res.ok) throw new Error("공지사항 API 호출 실패");
 
     notices.value = await res.json();
 
   } catch (e) {
-    console.error("공지사항 API 실패 → 임시 데이터 사용");
-
-    notices.value = [
-      {
-        id: 1,
-        title: "[공지] 시스템 점검 안내 (임시 공지)",
-        createdAt: "2025-12-01"
-      },
-      {
-        id: 2,
-        title: "🔧 테스트 서버 점검 중입니다!",
-        createdAt: "2025-12-02"
-      }
-    ];
+    console.error("❌ 공지사항 조회 실패", e);
   }
 };
 

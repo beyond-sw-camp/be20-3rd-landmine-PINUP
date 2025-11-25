@@ -270,7 +270,6 @@ onMounted(async () => {
 }
 
 .ranking-header {
-  max-width: 1000px;
   margin: 0 auto;
   padding: 0 0 20px 0;
   display: flex;
