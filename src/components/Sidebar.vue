@@ -18,7 +18,7 @@
         <span class="icon"></span> 지도 꾸미기
       </RouterLink>
 
-      <RouterLink to="/feed" class="nav-item" :class="{ active: isActive('/feed') }">
+      <RouterLink to="/feeds" class="nav-item" :class="{ active: isActive('/feeds') }">
         <span class="icon"></span> 피드
       </RouterLink>
 
