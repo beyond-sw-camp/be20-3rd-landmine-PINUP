@@ -107,25 +107,24 @@ const formatAmount = (amount) => {
 // API 호출: 총 포인트
 async function fetchTotalPoint(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId), { credentials: "include" }}`
-  )
-  if (!res.ok) {
-    throw new Error(`총 포인트 조회 실패: ${res.status}`)
-  }
-  // 응답이 숫자 하나라고 가정
-  return res.json()
+      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId)}`,
+      { credentials: "include" }
+  );
+
+  if (!res.ok) throw new Error(`총 포인트 조회 실패: ${res.status}`);
+
+  return res.json();
 }
 
-// API 호출: 포인트 로그 리스트
 async function fetchPointLogs(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId), { credentials: "include" }}`
-  )
-  if (!res.ok) {
-    throw new Error(`포인트 로그 조회 실패: ${res.status}`)
-  }
-  // [{ date, description, amount }, ...]
-  return res.json()
+      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId)}`,
+      { credentials: "include" }
+  );
+
+  if (!res.ok) throw new Error(`포인트 로그 조회 실패: ${res.status}`);
+
+  return res.json();
 }
 
 // 전체 로딩
