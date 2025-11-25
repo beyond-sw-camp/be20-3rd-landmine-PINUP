@@ -1,14 +1,10 @@
 <template>
   <div class="point-page">
-    <section class="panel">
-      <!-- 상단 제목 + 뒤로가기 -->
-      <header class="panel-header">
-        <div class="panel-title">
-          <button class="back-btn" @click="goBack">←</button>
-          <span class="emoji">💰</span>
-          <span>나의 포인트 사용 내역</span>
-        </div>
-      </header>
+    <!-- 상단 제목 + 뒤로가기 -->
+    <button class="back-btn" @click="goBack">←</button>
+    <span class="emoji">💰</span>
+    <span class="page-title">나의 포인트 사용 내역</span>
+  </div>
 
       <!-- 내용 행: 테이블 + 요약 카드 -->
       <div class="content-row">
@@ -72,8 +68,7 @@
           </p>
         </aside>
       </div>
-    </section>
-  </div>
+
 </template>
 
 <script setup>
@@ -166,63 +161,48 @@ onMounted(() => {
 }
 
 .point-page {
-  width: 100%;
-  padding: 32px 40px;
-  background: #dcdcdc;
-}
-
-/* 패널 */
-.panel {
-  background: #f9fbff;
-  border-radius: 32px;
-  padding: 32px 36px;
-  min-height: calc(100vh - 64px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-header {
-  margin-bottom: 24px;
-}
-
-.panel-title {
-  font-size: 20px;
-  font-weight: 600;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 40px 8px;
+  background: transparent;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
-.panel-title .emoji {
+.point-page .emoji {
   font-size: 22px;
 }
-
+.page-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-left: 4px;
+}
 /* 뒤로가기 버튼 */
 .back-btn {
   border: none;
-  background: #ffffff;
+  background: #E9E6FF;
+  color: #4A45A3;
   border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  padding: 8px 18px;
+  font-size: 13px;
 }
-.back-btn:hover {
-  transform: translateY(-1px);
+.back-btn:hover:not(:disabled) {
+  background: #D6D0FF;
 }
-
 /* 레이아웃 */
 .content-row {
   display: grid;
   grid-template-columns: 3fr 1.3fr;
   gap: 24px;
   flex: 1;
+  max-width: 1000px;
+  margin: 8px auto 0;
 }
 
 /* 포인트 로그 테이블 카드 */
@@ -308,11 +288,6 @@ tbody tr:nth-child(even) {
 @media (max-width: 960px) {
   .point-page {
     padding: 20px;
-  }
-  .panel {
-    padding: 20px;
-    border-radius: 24px;
-    min-height: auto;
   }
   .content-row {
     grid-template-columns: 1fr;
