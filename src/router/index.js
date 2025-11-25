@@ -46,6 +46,9 @@ const routes = [
         children: [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
+            { path: 'notices', component: NoticeListView },
+            { path: 'notices/:id', component: NoticeDetailView },
+            { path: 'points', name: 'points', component: PointHistoryView },
             // feeds
             {
                 path: '/feeds',
@@ -65,7 +68,11 @@ const routes = [
         path: '/admin',
         children: [
             { path: 'dashboard', component: AdminDashboardView },
-            { path: 'users', component: AdminUsersView }
+            { path: 'users', component: AdminUsersView },
+            { path: 'notices', component: NoticeManageView },
+            { path: 'notices/post', component: NoticePostView },
+            { path: 'notices/edit/:id', component: NoticeEditView },
+            { path: 'notices/:id', component: AdminNoticeDetailView }
         ]
     }
 ]
