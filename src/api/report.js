@@ -26,3 +26,12 @@ export async function getReportMetadata() {
     const res = await api.get('http://localhost:8080/report/info');
     return res.data;
 }
+
+/**
+ * 신고 상태 변경 (승인/반려)
+ * PATCH /report
+ */
+export async function updateReportStatus({ reportId, reportStatus, adminStatement }) {
+    const res = await api.patch(`http://localhost:8080/report`, { reportId, reportStatus, adminStatement });
+    return res.data;
+}

@@ -57,8 +57,8 @@
             <textarea v-model="reason" class="form-control" rows="3" placeholder="처리 사유를 입력하세요..."></textarea>
           </div>
           <div class="form-actions">
-            <button class="btn btn-approve">신고 승인</button>
-            <button class="btn btn-reject">신고 반려</button>
+            <button class="btn btn-approve" @click="handleApprove">신고 승인</button>
+            <button class="btn btn-reject" @click="handleReject">신고 반려</button>
             <button class="btn btn-cancel" @click="goToList">목록으로</button>
           </div>
         </section>
@@ -86,8 +86,39 @@ async function loadReport() {
   try {
     const response = await reportApi.getReportById(reportId);
     report.value = response;
+    if (response.adminStatement) {
+      reason.value = response.adminStatement;
+    }
   } catch (error) {
     console.error(`신고(id: ${reportId}) 정보를 불러오는 중 오류가 발생했습니다.`, error);
+  }
+}
+
+async function handleApprove() {
+  try {
+    await reportApi.updateReportStatus({
+      reportId: report.value.reportId,
+      reportStatus: 'SUSPENDED',
+      adminStatement: reason.value
+    });
+    alert('신고가 승인되었습니다.');
+    router.push('/admin/reports');
+  } catch (error) {
+    console.error('신고 승인 중 오류 발생:', error);
+  }
+}
+
+async function handleReject() {
+  try {
+    await reportApi.updateReportStatus({
+      reportId: report.value.reportId,
+      reportStatus: 'DELETED',
+      adminStatement: reason.value
+    });
+    alert('신고가 반려되었습니다.');
+    router.push('/admin/reports');
+  } catch (error) {
+    console.error('신고 반려 중 오류 발생:', error);
   }
 }
 
@@ -191,7 +222,7 @@ h3 { margin-top: 0; }
 }
 
 .bottom-card {
-  margin-top: 5px;
+  margin-top: 20px;
 }
 
 .inner-card {
