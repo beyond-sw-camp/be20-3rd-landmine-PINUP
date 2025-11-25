@@ -43,7 +43,7 @@
           </thead>
 
           <tbody>
-          <tr v-for="user in recentUsers" :key="user.email">
+          <tr v-for="user in recentUsers.slice(0, 7)" :key="user.email">
             <td>{{ user.name }}</td>
             <td>{{ user.nickname }}</td>
             <td>{{ user.email }}</td>
