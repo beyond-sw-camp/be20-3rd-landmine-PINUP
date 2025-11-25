@@ -51,7 +51,7 @@ const routes = [
             { path: 'points', name: 'points', component: PointHistoryView },
             // feeds
             {
-                path: '/feeds',
+                path: 'feeds',
                 name : 'feeds',
                 component : FeedsHomeView
             },
