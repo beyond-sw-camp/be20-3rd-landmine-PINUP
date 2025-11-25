@@ -13,9 +13,6 @@ import MyPageView from '@/views/user/MyPageView.vue'
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminUsersView from "@/views/admin/AdminUsersView.vue";
 
-// 포인트 영역
-import PointHistoryView from "@/views/user/PointHistoryView.vue";
-
 const routes = [
     // 사용자 로그인
     {
@@ -36,7 +33,6 @@ const routes = [
         children: [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
-            { path: 'points', name: 'points', component: PointHistoryView },
         ]
     },
 
