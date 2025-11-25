@@ -55,6 +55,15 @@
           </tbody>
 
         </table>
+
+        <div class="pagination">
+          <button :disabled="page === 1" @click="changePage(page - 1)"> 이전 </button>
+
+          <span>{{ page }} / {{ totalPages }}</span>
+
+          <button :disabled="page === totalPages" @click="changePage(page + 1)"> 다음 </button>
+        </div>
+
       </section>
     </main>
   </div>
@@ -74,6 +83,10 @@ import {
 
 const users = ref([]);
 const filter = ref("ALL");
+const page = ref(1);
+const size = ref(6);
+const totalPages = ref(1);
+
 
 const filteredUsers = computed(() => {
   if (filter.value === "ALL") return users.value;
@@ -85,7 +98,9 @@ function filterStatus(type) {
 }
 
 async function reloadUsers() {
-  users.value = await fetchUsers();
+  const res = await fetchUsers({ page: page.value, size: size.value });
+  users.value = res.content;
+  totalPages.value = res.totalPages;
 }
 
 async function handleSuspend(id) {
@@ -107,6 +122,12 @@ async function handleDelete(id) {
   reloadUsers();
 }
 
+function changePage(newPage) {
+  if (newPage < 1 || newPage > totalPages.value) return;
+  page.value = newPage;
+  reloadUsers();
+}
+
 async function adminLogout() {
   await axiosInstance.post("/admin/logout");
   localStorage.removeItem("adminToken");
@@ -114,9 +135,9 @@ async function adminLogout() {
 }
 
 onMounted(async () => {
-  users.value = await fetchUsers();
-  console.log("📌 가져온 회원 데이터:", users.value);
+  await reloadUsers();
 });
+
 </script>
 
 <style scoped>
@@ -237,4 +258,29 @@ tr:hover { background: #f9fbff; }
 .manage-btn:hover {
   background: linear-gradient(135deg, #0F6DD0, #0D5BB3);
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: #3AC45D;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 </style>
