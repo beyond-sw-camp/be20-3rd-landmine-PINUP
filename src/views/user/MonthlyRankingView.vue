@@ -272,7 +272,7 @@ onMounted(async () => {
 .ranking-header {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 20px 40px 8px;
+  padding: 0 0 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -289,7 +289,7 @@ onMounted(async () => {
 
 .ranking-header .page-title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 
