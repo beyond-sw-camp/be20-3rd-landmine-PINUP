@@ -30,6 +30,10 @@
         <span class="icon"></span> 공지사항
       </RouterLink>
 
+      <RouterLink to="/conquer" class="nav-item" :class="{ active: isActive('/conquer') }">
+        <span class="icon"></span> 점령하기
+      </RouterLink>
+
       <!-- 알림 버튼 -->
       <div class="nav-item" id="notif-btn" @click="toggleNotif">
         <span class="icon"></span>

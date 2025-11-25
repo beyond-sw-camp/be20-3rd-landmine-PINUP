@@ -9,6 +9,9 @@ import AdminLoginView from '@/views/login/AdminLoginView.vue'
 import AppLayout from '@/components/layouts/AppLayout.vue'
 import HomeView from '@/views/user/HomeView.vue'
 import MyPageView from '@/views/user/MyPageView.vue'
+import DecorateHomeView from "@/views/user/DecorateHomeView.vue";
+import DecorateProvinceView from "@/views/user/DecorateProvinceView.vue";
+import ConquerView from "@/views/user/ConquerView.vue";
 
 // 관리자 영역
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
@@ -56,6 +59,9 @@ const routes = [
         children: [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
+            { path: 'decorate', component: DecorateHomeView },
+            { path: 'decorate/:provinceId', component: DecorateProvinceView, props: true },
+            { path: 'conquer', component: ConquerView },
             { path: 'users/:userId', component: UserProfileView, props: true },
             { path: 'notices', component: NoticeListView },
             { path: 'notices/:id', component: NoticeDetailView },
