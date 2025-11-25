@@ -7,7 +7,7 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-title">👥 회원 관리</div>
-        <button class="logout-btn" @click="logout">로그아웃</button>
+        <button class="logout-btn" @click="adminLogout">로그아웃</button>
       </div>
 
       <section class="table-card">
@@ -91,6 +91,8 @@ import {
   activateUser as apiActivateUser,
   deleteUser as apiDeleteUser
 } from "@/api/UserAdminApi.js";
+import router from "@/router/index.js";
+import axios from "axios";
 
 // 사용자 리스트 다시 불러오기
 async function reloadUsers() {
@@ -122,10 +124,15 @@ async function handleDelete(id) {
   reloadUsers();
 }
 
-// 로그아웃
-function logout() {
-  window.location.href = "/logout";
+// 관리자 로그아웃
+async function adminLogout() {
+  await axios.post("http://localhost:8080/admin/logout");
+
+  localStorage.removeItem("adminToken");
+
+  window.location.href = "/admin/login";
 }
+
 </script>
 
 <style scoped>
