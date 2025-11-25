@@ -19,6 +19,9 @@ import NoticePostView from '@/views/notice/admin/NoticePostView.vue'
 import NoticeEditView from '@/views/notice/admin/NoticeEditView.vue'
 import AdminNoticeDetailView from '@/views/notice/admin/AdminNoticeDetailView.vue'
 
+// 포인트 영역
+import PointHistoryView from "@/views/user/PointHistoryView.vue";
+
 const routes = [
     // 사용자 로그인
     {
@@ -41,6 +44,7 @@ const routes = [
             { path: 'mypage', component: MyPageView },
             { path: 'notices', component: NoticeListView },
             { path: 'notices/:id', component: NoticeDetailView },
+            { path: 'points', name: 'points', component: PointHistoryView },
         ]
     },
 
