@@ -49,12 +49,12 @@
     <section class="dashboard-map">
       <!-- 🏆 월간 랭킹 섹션 -->
       <div class="ranking-card">
-        <h3>🏆 월간 랭킹</h3>
-
-        <!-- ⭐ 전체 보기 버튼 -->
-        <button class="ranking-more-btn" @click="goToRanking">
-          랭킹 전체 보기
-        </button>
+        <div class="ranking-header">
+          <h3>🏆 월간 랭킹</h3>
+          <button class="ranking-more-btn" @click="goToRanking">
+            랭킹 전체 보기
+          </button>
+        </div>
 
         <table class="ranking-table">
           <thead>
@@ -385,6 +385,17 @@ onMounted(() => {
   padding: 20px;
 }
 
+.ranking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ranking-header h3 {
+  margin: 0;
+}
+
 .ranking-table {
   width: 100%;
   text-align: center;
@@ -392,17 +403,18 @@ onMounted(() => {
 }
 
 .ranking-more-btn {
-  float: right;
-  background: #1A8CFF;
-  border: none;
-  color: white;
-  padding: 8px 18px;
+  font-size: 10px;
+  color: #1A8CFF;
+  background: rgba(90, 53, 255, 0.06);
+  padding: 5px 9px;
   border-radius: 999px;
   cursor: pointer;
-  font-size: 14px;
+  border: none;
+  outline: none;
 }
 .ranking-more-btn:hover {
-  background: #0079e6;
+  outline: none;
+  box-shadow: 0 0 4px rgba(26, 140, 255, 0.6);
 }
 /* 랭킹 & 공지사항 공통 */
 .ranking-table th,
