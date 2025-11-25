@@ -31,6 +31,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import router from "@/router/index.js";
+import axiosInstance from "@/api/axios.js";
 
 const username = ref("");
 const password = ref("");
@@ -38,14 +39,17 @@ const password = ref("");
 // 관리자 로그인 API 호출
 const login = async () => {
   try {
-    const formData = new FormData();
-    formData.append("username", username.value);
-    formData.append("password", password.value);
+    const params = new URLSearchParams();
+    params.append("username", username.value);
+    params.append("password", password.value);
 
     const res = await axios.post(
         "http://localhost:8080/admin/login",
-        formData,
+        params,
         {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
           withCredentials: true,
         }
     );
