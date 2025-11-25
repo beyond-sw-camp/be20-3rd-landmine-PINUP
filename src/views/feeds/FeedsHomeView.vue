@@ -1,5 +1,20 @@
 <script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
+
+const feeds = ref([]);
+const isLoading = ref(false);
+const isEnd = ref(false);
+
+const loadMore = () => {
+  // TODO: implement feed fetching
+};
+
+const goToWrite = () => {
+  router.push("/feeds/write");
+};
 </script>
 
 <template>
@@ -16,7 +31,7 @@
       </el-button>
     </div>
 
-    <!-- 4열 그리드(슬라이스 느낌) -->
+    <!-- 4열 그리드(슬라이스) -->
     <div
         class="feed-grid"
         v-infinite-scroll="loadMore"
@@ -53,7 +68,10 @@
       </div>
     </div>
 
-    <!-- 로딩 / 끝 -->
+    <div v-if="!isLoading && feeds.length === 0" class="feed-empty">
+      작성된 피드가 없습니다
+    </div>
+
     <div v-if="isLoading" class="feed-loading">
       불러오는 중...
     </div>

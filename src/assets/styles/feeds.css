@@ -1,7 +1,21 @@
+.feed-back-btn {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.feed-back-btn:hover {
+    opacity: 0.7;
+}
+
 .feed-page {
     padding: 24px 32px;
 }
-
 
 @media (max-width: 960px) {
     .feed-page {
@@ -130,6 +144,14 @@
     color: var(--pinup-text-sub);
 }
 
+.feed-empty {
+    margin: 48px 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--pinup-text-sub);
+}
+
 .feed-form {
     margin-top: 16px;
     background: var(--pinup-card-bg);
@@ -159,12 +181,53 @@
     color: var(--pinup-text-sub);
 }
 
-/* Element Plus input/textarea에 살짝 여백 맞추기 */
-.feed-form .el-input,
-.feed-form .el-textarea {
-    max-width: 640px;
+/* ---- Element Plus input/textarea Figma 스타일 ---- */
+
+/* 제목 input 공용 스타일 - Element Plus wrapper 기준으로 */
+.feed-input .el-input__wrapper {
+    background: #f3f4f6;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+    padding: 0 16px;
 }
 
+/* 안쪽 input은 테두리/배경 제거해서 wrapper에만 맡기기 */
+.feed-input .el-input__inner {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--pinup-text-main);
+}
+
+.feed-input .el-input__inner::placeholder {
+    color: #9ca3af;
+}
+
+.feed-input.el-input.is-focus .el-input__wrapper {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.35);
+}
+
+.feed-textarea .el-textarea__inner {
+    width: 100%;
+    background: #f3f4f6;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--pinup-text-main);
+    resize: none;
+}
+
+.feed-textarea .el-textarea__inner::placeholder {
+    color: #9ca3af;
+}
+
+/* 이미지 업로드 영역 */
 .feed-upload-area {
     border-radius: 14px;
     border: 1px dashed #cbd5f5;
@@ -197,3 +260,4 @@
         grid-template-columns: 1fr;
     }
 }
+

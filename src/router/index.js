@@ -12,7 +12,10 @@ import MyPageView from '@/views/user/MyPageView.vue'
 // 관리자 영역
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminUsersView from "@/views/admin/AdminUsersView.vue";
+
+// feeds
 import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
+import FeedsWriteView from "@/views/feeds/FeedsWriteView.vue";
 
 const routes = [
     // 사용자 로그인
@@ -39,6 +42,11 @@ const routes = [
                 path: '/feeds',
                 name : 'feeds',
                 component : FeedsHomeView
+            },
+            {
+                path: 'feeds/write',
+                name: 'feeds-write',
+                component: FeedsWriteView
             },
         ]
     },
