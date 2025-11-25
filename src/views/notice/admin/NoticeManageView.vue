@@ -52,7 +52,7 @@ const notices = ref([]);
 async function loadNotices() {
   try {
     const response = await noticeApi.getNotices();
-    notices.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    notices.value = response.data;
   } catch (error) {
     console.error("공지사항을 불러오는 중 오류가 발생했습니다.", error);
   }

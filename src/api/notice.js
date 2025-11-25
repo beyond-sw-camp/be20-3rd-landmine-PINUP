@@ -3,12 +3,12 @@ import axiosInstance from './axios'; // Assuming axiosInstance is exported from 
 const noticeApi = {
   // 공지사항 목록 조회
   getNotices() {
-    return axiosInstance.get('http://localhost:8080/notices');
+    return axiosInstance.get('http://localhost:8080/api/notices');
   },
 
   // 특정 공지사항 상세 조회
   getNoticeById(id) {
-    return axiosInstance.get(`http://localhost:8080/notices/${id}`);
+    return axiosInstance.get(`http://localhost:8080/api/notices/${id}`);
   },
 
   // 새 공지사항 생성 (관리자용)
