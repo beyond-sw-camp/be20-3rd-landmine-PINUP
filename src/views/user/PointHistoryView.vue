@@ -3,7 +3,7 @@
     <!-- 상단 제목 + 뒤로가기 -->
     <button class="back-btn" @click="goBack">←</button>
     <span class="emoji">💰</span>
-    <span>나의 포인트 사용 내역</span>
+    <span class="page-title">나의 포인트 사용 내역</span>
   </div>
 
       <!-- 내용 행: 테이블 + 요약 카드 -->
@@ -167,10 +167,14 @@ onMounted(() => {
   background: transparent;
 }
 
-.panel-title .emoji {
+.point-page .emoji {
   font-size: 22px;
 }
-
+.page-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-left: 4px;
+}
 /* 뒤로가기 버튼 */
 .back-btn {
   border: none;
