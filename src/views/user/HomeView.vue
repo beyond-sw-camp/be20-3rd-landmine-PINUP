@@ -186,8 +186,8 @@ const loadRanking = async () => {
     const now = new Date();
     now.setMonth(now.getMonth() - 1);
 
-    const year = now.getFullYear();      // 반드시 선언
-    const month = now.getMonth() + 1;    // 반드시 +1 (JS는 0부터 시작)
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
 
     const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
       params: { year, month },
