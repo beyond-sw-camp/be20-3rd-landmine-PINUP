@@ -12,8 +12,17 @@ import MyPageView from '@/views/user/MyPageView.vue'
 // 관리자 영역
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminUsersView from "@/views/admin/AdminUsersView.vue";
+import NoticeListView from '@/views/notice/user/NoticeListView.vue'
+import NoticeDetailView from '@/views/notice/user/NoticeDetailView.vue'
+import NoticeManageView from '@/views/notice/admin/NoticeManageView.vue'
+import NoticePostView from '@/views/notice/admin/NoticePostView.vue'
+import NoticeEditView from '@/views/notice/admin/NoticeEditView.vue'
+import AdminNoticeDetailView from '@/views/notice/admin/AdminNoticeDetailView.vue'
 
-// feeds
+// 포인트 영역
+import PointHistoryView from "@/views/user/PointHistoryView.vue";
+
+// feeds 영역
 import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
 import FeedsWriteView from "@/views/feeds/FeedsWriteView.vue";
 
