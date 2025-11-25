@@ -1,7 +1,8 @@
 <template>
   <!-- AppLayout 안에서 컨텐츠만 차지하는 구조 -->
   <div class="ranking-page">
-      <div class="ranking-header">
+    <div class="ranking-header">
+      <div class="ranking-header-left">
         <button class="back-btn" @click="goBack">←</button>
         <span class="emoji">🏆</span>
         <span class="page-title">월간 랭킹 TOP 100</span>
@@ -96,6 +97,7 @@
           </div>
         </div>
       </div>
+  </div>
 </template>
 
 <script setup>
@@ -271,13 +273,16 @@ onMounted(async () => {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px 40px 8px;
-
   display: flex;
-  align-items: center;  /* ← 세 요소(←, 이모지, 타이틀) 수직 중앙 정렬 */
-  gap: 6px;             /* ← 붙여놓되 적당히 간격 */
-  background: transparent;
+  justify-content: space-between;
+  align-items: center;
 }
 
+.ranking-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .ranking-header .emoji {
   font-size: 22px;
 }
@@ -296,7 +301,7 @@ onMounted(async () => {
   border-radius: 999px;
   padding: 6px 18px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  gap: 12px;
+  gap: 8px;
 }
 .month-box input[type='month'] {
   border: none;
