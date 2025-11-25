@@ -163,8 +163,11 @@ onMounted(() => {
 .point-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 32px 40px;
+  padding: 20px 40px 8px;
   background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .point-page .emoji {
@@ -199,7 +202,7 @@ onMounted(() => {
   gap: 24px;
   flex: 1;
   max-width: 1000px;
-  margin: 16px auto 0;
+  margin: 8px auto 0;
 }
 
 /* 포인트 로그 테이블 카드 */
