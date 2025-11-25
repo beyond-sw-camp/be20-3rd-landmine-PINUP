@@ -18,7 +18,7 @@
         <tr v-for="notice in notices" :key="notice.noticeId" @click="goToNoticeDetail(notice.noticeId)">
           <td>{{ notice.noticeId }}</td>
           <td>{{ notice.noticeTitle }}</td>
-          <td>{{ notice.createdAt }}</td>
+          <td>{{ formatDate(notice.createdAt) }}</td>
         </tr>
         </tbody>
       </table>
@@ -33,6 +33,15 @@ import noticeApi from '@/api/notice';
 
 const router = useRouter();
 const notices = ref([]);
+
+function formatDate(datetimeString) {
+  if (!datetimeString) return '';
+  const date = new Date(datetimeString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 async function loadNotices() {
   try {
