@@ -62,6 +62,7 @@ import { ref, onMounted } from "vue";
 import AdminSidebar from "@/components/AdminSidebar.vue";
 import router from "@/router/index.js";
 import axios from "axios";
+import { fetchAdminStats, fetchRecentUsers } from "@/api/AdminDashboardApi.js";
 
 // 통계 데이터
 const stats = ref({
@@ -78,47 +79,21 @@ function formatDate(date) {
   return new Date(date).toISOString().slice(0, 10);
 }
 
-// API 호출 (연결 전이므로 임시 데이터 삽입 가능)
-onMounted(() => {
-  // API 미연결 → 임시 데이터
-  stats.value = {
-    userCount: 1280,
-    newUsersToday: 12,
-    feedCount: 5400,
-    reportPending: 3,
-  };
-
-  recentUsers.value = [
-    {
-      name: "홍길동",
-      nickname: "gildong",
-      email: "test1@example.com",
-      createdAt: "2025-11-01",
-    },
-    {
-      name: "김영희",
-      nickname: "yeong",
-      email: "test2@example.com",
-      createdAt: "2025-11-01",
-    },
-    {
-      name: "박철수",
-      nickname: "철수맨",
-      email: "test3@example.com",
-      createdAt: "2025-10-31",
-    },
-  ];
+onMounted(async () => {
+  try {
+    stats.value = await fetchAdminStats();
+    recentUsers.value = await fetchRecentUsers();
+  } catch (error) {
+    console.error("📌 관리자 대시보드 데이터 불러오기 실패:", error);
+  }
 });
 
 // 관리자 로그아웃
 async function adminLogout() {
   await axios.post("http://localhost:8080/admin/logout");
-
   localStorage.removeItem("adminToken");
-
   window.location.href = "/admin/login";
 }
-
 </script>
 
 <style scoped>

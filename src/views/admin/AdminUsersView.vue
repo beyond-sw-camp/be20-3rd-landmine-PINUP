@@ -75,42 +75,31 @@ import {
 const users = ref([]);
 const filter = ref("ALL");
 
-// 필터된 유저 목록
 const filteredUsers = computed(() => {
   if (filter.value === "ALL") return users.value;
   return users.value.filter((u) => u.status === "SUSPENDED");
 });
 
-// 필터 버튼 클릭
 function filterStatus(type) {
   filter.value = type;
 }
 
-// 첫 로드 시 전체 회원 조회
-onMounted(async () => {
-  users.value = await fetchUsers();
-});
-
-// 사용자 리스트 다시 로드
 async function reloadUsers() {
   users.value = await fetchUsers();
 }
 
-// 정지
 async function handleSuspend(id) {
   await apiSuspendUser(id);
   alert("정지 완료!");
   reloadUsers();
 }
 
-// 활성화
 async function handleActivate(id) {
   await apiActivateUser(id);
   alert("활성화 완료!");
   reloadUsers();
 }
 
-// 삭제
 async function handleDelete(id) {
   if (!confirm("정말 삭제하시겠습니까?")) return;
   await apiDeleteUser(id);
@@ -118,12 +107,16 @@ async function handleDelete(id) {
   reloadUsers();
 }
 
-// 관리자 로그아웃
 async function adminLogout() {
   await axiosInstance.post("/admin/logout");
   localStorage.removeItem("adminToken");
   router.push("/admin/login");
 }
+
+onMounted(async () => {
+  users.value = await fetchUsers();
+  console.log("📌 가져온 회원 데이터:", users.value);
+});
 </script>
 
 <style scoped>
