@@ -126,12 +126,6 @@ const formatDate = (d) => {
   return new Date(d).toLocaleDateString();
 };
 
-// 가짜 사용자 데이터 — 로그인 후 백엔드에서 받아온다고 가정
-// const user = ref({
-//   name: "사용자",
-//   picture: "/images/default-profile.png"
-// });
-
 const conquer = ref({
   total: 100,
   monthly: 55
@@ -184,19 +178,18 @@ const loadRanking = async () => {
     const month = now.getMonth() + 1;
 
     const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
-      params: { year, month },
+      params: { year: year, month: month },
       withCredentials: true
     });
 
-    ranking.value = data.slice(0, 10);
+    ranking.value = data.map(item => ({
+      rank: item.rank,
+      userName: item.nickname ?? "익명",
+      completedCount: item.captureCount ?? 0
+    }));
 
   } catch (e) {
-    console.error("API 실패 → 임시 데이터 사용");
-    ranking.value = [
-      { rank: 1, userName: "테스트1", completedCount: 10 },
-      { rank: 2, userName: "테스트2", completedCount: 8 },
-      { rank: 3, userName: "테스트3", completedCount: 8 }
-    ];
+    console.error("❌ 랭킹 조회 실패", e);
   }
 };
 
@@ -208,8 +201,6 @@ const loadNotices = async () => {
     const res = await fetch("http://localhost:8080/api/notices/latest?limit=2", {
       credentials: "include"
     });
-    console.log("📌 공지 응답:", notices.value);
-
 
     if (!res.ok) throw new Error("공지사항 API 호출 실패");
 
