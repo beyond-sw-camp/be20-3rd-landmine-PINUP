@@ -8,7 +8,7 @@ export async function fetchUsers({ page = 1, size = 20, keyword = '' } = {}) {
     const params = { page, size, keyword };
 
     const res = await api.get('/admin/users', { params });
-    return res.data.data; // ApiResponse<UserListResponse>
+    return res.data;
 }
 
 /**
