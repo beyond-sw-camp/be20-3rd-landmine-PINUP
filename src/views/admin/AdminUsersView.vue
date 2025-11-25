@@ -57,11 +57,31 @@
         </table>
 
         <div class="pagination">
-          <button :disabled="page === 1" @click="changePage(page - 1)"> 이전 </button>
+          <button
+              class="page-btn"
+              :disabled="page === 1"
+              @click="changePage(page - 1)"
+          >
+            ←
+          </button>
 
-          <span>{{ page }} / {{ totalPages }}</span>
+          <button
+              v-for="p in totalPages"
+              :key="p"
+              class="page-btn"
+              :class="{ active: p === page }"
+              @click="changePage(p)"
+          >
+            {{ p }}
+          </button>
 
-          <button :disabled="page === totalPages" @click="changePage(page + 1)"> 다음 </button>
+          <button
+              class="page-btn"
+              :disabled="page === totalPages"
+              @click="changePage(page + 1)"
+          >
+            →
+          </button>
         </div>
 
       </section>
@@ -264,22 +284,33 @@ tr:hover { background: #f9fbff; }
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
-.pagination button {
-  padding: 8px 16px;
+.page-btn {
+  width: 30px;
+  height: 30px;
   border: none;
-  border-radius: 999px;
-  background: #3AC45D;
-  color: white;
+  border-radius: 10px;
+  background: #E9E6FF;  /* 연한 라벤더 */
+  color: #4A45A3; /* 진한 보라 */
   cursor: pointer;
+  font-size: 13px;
   font-weight: 600;
-  transition: 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
-.pagination button:disabled {
-  background: #ccc;
+.page-btn:hover:not(:disabled) {
+  background: #D6D0FF;
+}
+
+.page-btn.active {
+  background: #5148C5; /* 진한 보라 */
+  color: white;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
