@@ -55,6 +55,35 @@
           </tbody>
 
         </table>
+
+        <div class="pagination">
+          <button
+              class="page-btn"
+              :disabled="page === 1"
+              @click="changePage(page - 1)"
+          >
+            ←
+          </button>
+
+          <button
+              v-for="p in totalPages"
+              :key="p"
+              class="page-btn"
+              :class="{ active: p === page }"
+              @click="changePage(p)"
+          >
+            {{ p }}
+          </button>
+
+          <button
+              class="page-btn"
+              :disabled="page === totalPages"
+              @click="changePage(page + 1)"
+          >
+            →
+          </button>
+        </div>
+
       </section>
     </main>
   </div>
@@ -63,48 +92,37 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import AdminSidebar from "@/components/AdminSidebar.vue";
-
-// Mock 데이터 (API 연결 전)
-const users = ref([
-  { userId: 1, name: "홍길동", nickname: "gildong", email: "gil@example.com", status: "ACTIVE" },
-  { userId: 2, name: "김철수", nickname: "chul", email: "chul@example.com", status: "SUSPENDED" },
-  { userId: 3, name: "이영희", nickname: "heehee", email: "hee@example.com", status: "ACTIVE" },
-]);
-
-const filter = ref("ALL");
-
-// 필터된 유저 목록
-const filteredUsers = computed(() => {
-  if (filter.value === "ALL") return users.value;
-  return users.value.filter((u) => u.status === "SUSPENDED");
-});
-
-// 필터 버튼 클릭
-function filterStatus(type) {
-  filter.value = type;
-}
-
-// API 함수 임포트 (충돌 방지 위해 이름 변경)
+import router from "@/router/index.js";
+import axiosInstance from "@/api/axios.js";
 import {
   fetchUsers,
   suspendUser as apiSuspendUser,
   activateUser as apiActivateUser,
   deleteUser as apiDeleteUser
 } from "@/api/UserAdminApi.js";
-import router from "@/router/index.js";
-import axios from "axios";
 
-// 사용자 리스트 다시 불러오기
-async function reloadUsers() {
-  users.value = await fetchUsers();
-}
+const users = ref([]);
+const filter = ref("ALL");
+const page = ref(1);
+const size = ref(6);
+const totalPages = ref(1);
 
-// 첫 로드 시 데이터 로드
-onMounted(async () => {
-  users.value = await fetchUsers();
+
+const filteredUsers = computed(() => {
+  if (filter.value === "ALL") return users.value;
+  return users.value.filter((u) => u.status === "SUSPENDED");
 });
 
-// UI에서 호출되는 액션 핸들러
+function filterStatus(type) {
+  filter.value = type;
+}
+
+async function reloadUsers() {
+  const res = await fetchUsers({ page: page.value, size: size.value });
+  users.value = res.content;
+  totalPages.value = res.totalPages;
+}
+
 async function handleSuspend(id) {
   await apiSuspendUser(id);
   alert("정지 완료!");
@@ -124,14 +142,21 @@ async function handleDelete(id) {
   reloadUsers();
 }
 
-// 관리자 로그아웃
-async function adminLogout() {
-  await axios.post("http://localhost:8080/admin/logout");
-
-  localStorage.removeItem("adminToken");
-
-  window.location.href = "/admin/login";
+function changePage(newPage) {
+  if (newPage < 1 || newPage > totalPages.value) return;
+  page.value = newPage;
+  reloadUsers();
 }
+
+async function adminLogout() {
+  await axiosInstance.post("/admin/logout");
+  localStorage.removeItem("adminToken");
+  router.push("/admin/login");
+}
+
+onMounted(async () => {
+  await reloadUsers();
+});
 
 </script>
 
@@ -253,4 +278,40 @@ tr:hover { background: #f9fbff; }
 .manage-btn:hover {
   background: linear-gradient(135deg, #0F6DD0, #0D5BB3);
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.page-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  background: #E9E6FF;  /* 연한 라벤더 */
+  color: #4A45A3; /* 진한 보라 */
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #D6D0FF;
+}
+
+.page-btn.active {
+  background: #5148C5; /* 진한 보라 */
+  color: white;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 </style>
