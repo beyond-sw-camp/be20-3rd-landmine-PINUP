@@ -13,9 +13,6 @@ import MyPageView from '@/views/user/MyPageView.vue'
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminUsersView from "@/views/admin/AdminUsersView.vue";
 
-// 랭킹 영역
-import MonthlyRankingView from "@/views/user/MonthlyRankingView.vue";
-
 const routes = [
     // 사용자 로그인
     {
@@ -36,8 +33,6 @@ const routes = [
         children: [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
-            { path: 'ranking', name: 'ranking', component: MonthlyRankingView },
-            // 공통 사이드 바 사용하는 것이니까..?
         ]
     },
 
@@ -48,8 +43,7 @@ const routes = [
             { path: 'dashboard', component: AdminDashboardView },
             { path: 'users', component: AdminUsersView }
         ]
-    },
-
+    }
 ]
 
 const router = createRouter({
