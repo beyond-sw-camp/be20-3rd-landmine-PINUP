@@ -107,7 +107,7 @@ const formatAmount = (amount) => {
 // API 호출: 총 포인트
 async function fetchTotalPoint(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId)}`
+      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId), { credentials: "include" }}`
   )
   if (!res.ok) {
     throw new Error(`총 포인트 조회 실패: ${res.status}`)
@@ -119,7 +119,7 @@ async function fetchTotalPoint(userId) {
 // API 호출: 포인트 로그 리스트
 async function fetchPointLogs(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId)}`
+      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId), { credentials: "include" }}`
   )
   if (!res.ok) {
     throw new Error(`포인트 로그 조회 실패: ${res.status}`)
