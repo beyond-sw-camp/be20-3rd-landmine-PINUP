@@ -187,7 +187,7 @@ const loadRanking = async () => {
     now.setMonth(now.getMonth() - 1);
     const ym = now.toISOString().slice(0, 7);
 
-    const { data } = await axios.get("http://localhost:8080/api/rankings/query/monthly/top100?ym=2025-10", {
+    const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
       params: { ym },// ← 여기만 써도 되니 URL에 ?ym=... 하드코딩은 빼도 됨
       withCredentials: true
     });
