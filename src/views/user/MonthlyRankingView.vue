@@ -1,17 +1,11 @@
 <template>
   <!-- AppLayout 안에서 컨텐츠만 차지하는 구조 -->
   <div class="ranking-page">
-    <section class="panel">
-      <!-- 상단 타이틀 + 월 선택 -->
-      <div class="panel-header">
-        <div class="panel-header-left">
-          <!-- 🔙 뒤로가기 버튼 -->
-          <button class="back-btn" @click="goBack">
-            ←
-          </button>
-          <span class="emoji">🏆</span>
-          <span>월간 랭킹 TOP 100</span>
-        </div>
+      <div class="ranking-header">
+        <button class="back-btn" @click="goBack">←</button>
+        <span class="emoji">🏆</span>
+        <span class="page-title">월간 랭킹 TOP 100</span>
+      </div>
 
         <div class="month-box">
           <input
@@ -102,8 +96,6 @@
           </div>
         </div>
       </div>
-    </section>
-  </div>
 </template>
 
 <script setup>
@@ -275,31 +267,26 @@ onMounted(async () => {
   padding: 32px 40px;
 }
 
-.panel {
-  background: #f9fbff;
-  border-radius: 28px;
-  padding: 32px 40px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  min-height: calc(100vh - 64px);
+.ranking-header {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 40px 8px;
+
   display: flex;
-  flex-direction: column;
+  align-items: center;  /* ← 세 요소(←, 이모지, 타이틀) 수직 중앙 정렬 */
+  gap: 6px;             /* ← 붙여놓되 적당히 간격 */
+  background: transparent;
 }
 
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+.ranking-header .emoji {
+  font-size: 22px;
 }
-.panel-header-left {
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  font-weight: 600;
+
+.ranking-header .page-title {
+  font-weight: 700;
+  font-size: 16px;
 }
-.panel-header-left span.emoji {
-  margin-right: 8px;
-}
+
 
 /* 연월 선택 */
 .month-box {
@@ -401,19 +388,19 @@ tbody tr:nth-child(even) {
 .back-btn {
   margin-right: 12px;
   border: none;
-  background: #ffffff;
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  background: #E9E6FF;
+  color: #4A45A3;
+  border-radius: 10px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
 }
-.back-btn:hover {
-  transform: translateY(-1px);
+.back-btn:hover:not(:disabled) {
+  background: #D6D0FF;
 }
 </style>
 
