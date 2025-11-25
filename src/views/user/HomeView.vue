@@ -185,7 +185,9 @@ const loadRanking = async () => {
   try {
     const now = new Date();
     now.setMonth(now.getMonth() - 1);
-    const ym = now.toISOString().slice(0, 7);
+
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
 
     const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
       params: { year, month },
