@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useBack } from '@/composables/useBack'
@@ -15,13 +15,34 @@ const content = ref('')
 const image = ref(null)
 const isSubmitting = ref(false)
 
+// 미리보기용 URL
+const previewUrl = ref('')
+
 const userId = computed(() => userStore.user?.id ?? null)
 
 const handleFileChange = (event) => {
   const target = event.target
   const fileList = target && target.files ? target.files : null
-  image.value = fileList && fileList.length > 0 ? fileList[0] : null
+  const file = fileList && fileList.length > 0 ? fileList[0] : null
+
+  // 기존 미리보기 URL 정리
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = ''
+  }
+
+  image.value = file
+
+  if (file) {
+    previewUrl.value = URL.createObjectURL(file)
+  }
 }
+
+onBeforeUnmount(() => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
+})
 
 const handleSubmit = async () => {
   const trimmedTitle = title.value.trim()
@@ -61,7 +82,6 @@ const handleSubmit = async () => {
 
   try {
     const formData = new FormData()
-
     formData.append('userId', String(userId.value))
     formData.append('title', trimmedTitle)
     formData.append('content', trimmedContent)
@@ -78,7 +98,7 @@ const handleSubmit = async () => {
     if (newFeedId) {
       await router.push({ name: 'feed-detail', params: { feedId: newFeedId } })
     } else {
-      ElMessage.error('피드는 작성완료')
+      ElMessage.error('피드는 작성완료') // TODO: 문구 수정?
     }
   } catch (e) {
     console.error(e)
@@ -141,12 +161,24 @@ const handleSubmit = async () => {
               class="feed-upload-input"
               @change="handleFileChange"
           />
-          <span>+ 이미지를 업로드 해주세요</span>
-        </label>
 
-        <div v-if="image" class="feed-upload-selected">
-          선택된 이미지: {{ image.name }}
-        </div>
+          <div class="feed-upload-content">
+            <!-- 왼쪽: 안내/파일명 -->
+            <div class="feed-upload-left">
+              <span v-if="image">
+                선택된 이미지: <strong>{{ image.name }}</strong>
+              </span>
+              <span v-else class="feed-upload-placeholder">
+                + 이미지를 업로드 해주세요
+              </span>
+            </div>
+
+            <!-- 오른쪽: 미리보기 -->
+            <div v-if="previewUrl" class="feed-upload-right">
+              <img :src="previewUrl" alt="이미지 미리보기" />
+            </div>
+          </div>
+        </label>
       </div>
     </div>
   </div>
@@ -160,9 +192,7 @@ const handleSubmit = async () => {
 }
 
 .feed-upload-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   padding: 16px;
   border: 1px dashed #ccc;
   border-radius: 8px;
@@ -170,9 +200,27 @@ const handleSubmit = async () => {
   cursor: pointer;
 }
 
-.feed-upload-selected {
-  margin-top: 8px;
-  font-size: 13px;
+.feed-upload-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.feed-upload-left {
+  font-size: 14px;
   color: #666;
+}
+
+.feed-upload-placeholder {
+  color: #999;
+}
+
+.feed-upload-right img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 </style>

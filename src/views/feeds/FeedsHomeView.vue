@@ -12,7 +12,7 @@ const isLoading = ref(false);
 const isEnd = ref(false);
 
 const cursor = ref(null);
-const ROWS = 4; // 한 번에 가져올 개수(원하면 1로 다시 줄여도 됨)
+const ROWS = 4; // 한 번에 가져올 개수
 
 // 피드 목록 로딩
 const loadMore = async () => {
@@ -20,9 +20,6 @@ const loadMore = async () => {
 
   isLoading.value = true;
   try {
-    // 데모용 딜레이 (필요 없으면 지워도 됨)
-    // await new Promise(resolve => setTimeout(resolve, 3000));
-
     const res = await api.get("/feeds/list", {
       params: {
         rows: ROWS,
@@ -32,12 +29,10 @@ const loadMore = async () => {
 
     console.log("feeds list response >>>", res.data);
 
-    // Swagger 기준: data 안에 items 배열
     const data = res.data?.data ?? {};
     const items = data.items ?? [];
 
     if (items.length === 0) {
-      // 더 이상 가져올 게 없음
       if (!feeds.value.length) {
         // 처음부터 0개면 "작성된 피드가 없습니다" 유지
       }
@@ -46,17 +41,16 @@ const loadMore = async () => {
     }
 
     const mapped = items.map((item) => ({
-      id: item.id,                                 // 피드 PK
-      title: item.title,                           // 제목
+      id: item.id,                                      // 피드 PK
+      title: item.title,                                // 제목
       thumbnailUrl: item.thumbnailUrl || item.imageUrl, // 썸네일/이미지
-      userProfile: null,                           // 프로필 이미지는 아직 없음
-      userName: item.authorName,                   // 작성자 이름
-      likeCount: item.likeCount ?? 0,              // 좋아요 수 기본값 0
+      userProfile: null,                                // 프로필 이미지는 아직 없음
+      userName: item.authorName,                        // 작성자 이름
+      likeCount: item.likeCount ?? 0,                   // 좋아요 수 기본값 0
     }));
 
     feeds.value.push(...mapped);
 
-    // 만약 nextCursor 내려주면 사용, 없으면 그냥 끝으로 판단
     if (data.nextCursor !== undefined && data.nextCursor !== null) {
       cursor.value = data.nextCursor;
     } else {
@@ -71,6 +65,7 @@ const loadMore = async () => {
 
 const WRITE_PATH = "/feeds/write";
 
+// 글쓰기 버튼
 const goToWrite = async () => {
   const ok = await userStore.ensureLoggedIn();
 
@@ -82,8 +77,27 @@ const goToWrite = async () => {
     return;
   }
 
-  // 로그인 확인 끝났으면 글쓰기 뷰로
   router.push(WRITE_PATH);
+};
+
+// ✅ 카드 클릭 → 로그인 확인 후 디테일 이동
+const goToDetail = async (feedId) => {
+  if (!feedId) return;
+
+  const ok = await userStore.ensureLoggedIn();
+
+  if (!ok) {
+    router.push({
+      path: "/login",
+      query: { redirect: `/feeds/${feedId}` },
+    });
+    return;
+  }
+
+  router.push({
+    name: "feed-detail",
+    params: { feedId },
+  });
 };
 
 // 첫 로드시 한 번 조회
@@ -146,6 +160,7 @@ onMounted(() => {
           v-for="feed in feeds"
           :key="feed.id"
           class="feed-card"
+          @click="goToDetail(feed.id)"
       >
         <div class="feed-card__thumb">
           <img :src="feed.thumbnailUrl" :alt="feed.title" />
@@ -200,4 +215,8 @@ onMounted(() => {
 <style src="@/assets/styles/feeds.css" />
 
 <style scoped>
+.feed-card {
+  cursor: pointer;
+}
 </style>
+
