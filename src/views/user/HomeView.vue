@@ -50,6 +50,12 @@
       <!-- 🏆 월간 랭킹 섹션 -->
       <div class="ranking-card">
         <h3>🏆 월간 랭킹</h3>
+
+        <!-- ⭐ 전체 보기 버튼 -->
+        <button class="ranking-more-btn" @click="goToRanking">
+          랭킹 전체 보기
+        </button>
+
         <table class="ranking-table">
           <thead>
           <tr>
@@ -120,6 +126,7 @@ import MyPageView from "@/views/user/MyPageView.vue";
 import L from "leaflet";
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import { useRouter } from 'vue-router'
 
 const formatDate = (d) => {
   return new Date(d).toLocaleDateString();
@@ -167,7 +174,12 @@ onMounted(() => {
 });
 
 // 랭킹 가져오기
-const ranking = ref([]);
+const ranking = ref([])   // 랭킹 리스트 상태
+const router = useRouter()
+
+const goToRanking = () => {
+  router.push({ name: 'ranking' })   // 라우터에서 name:'ranking' 등록함
+}
 
 const loadRanking = async () => {
   try {
@@ -175,8 +187,8 @@ const loadRanking = async () => {
     now.setMonth(now.getMonth() - 1);
     const ym = now.toISOString().slice(0, 7);
 
-    const { data } = await axios.get("http://localhost:8080/api/rankings/query/monthly/top100?ym=2025-10", {
-      params: { ym },
+    const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
+      params: { year, month },
       withCredentials: true
     });
 
@@ -237,7 +249,6 @@ onMounted(() => {
 });
 
 </script>
-
 <style scoped>
 
 * {
@@ -380,6 +391,19 @@ onMounted(() => {
   margin: 10px 0 20px 0;
 }
 
+.ranking-more-btn {
+  float: right;
+  background: #1A8CFF;
+  border: none;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.ranking-more-btn:hover {
+  background: #0079e6;
+}
 /* 랭킹 & 공지사항 공통 */
 .ranking-table th,
 .notice-table th {

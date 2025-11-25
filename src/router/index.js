@@ -22,6 +22,8 @@ import AdminNoticeDetailView from '@/views/notice/admin/AdminNoticeDetailView.vu
 
 // 포인트 영역
 import PointHistoryView from "@/views/user/PointHistoryView.vue";
+// 랭킹 영역
+import MonthlyRankingView from "@/views/user/MonthlyRankingView.vue";
 
 // feeds 영역
 import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
@@ -30,6 +32,7 @@ import ReportListView from '@/views/report/ReportListView.vue'
 import ReportHandleView from '@/views/report/ReportHandleView.vue'
 import StoreAllView from "@/views/store/StoreAllView.vue";
 import StoreHomeView from "@/views/store/StoreHomeView.vue";
+
 
 const routes = [
     // 사용자 로그인
@@ -55,6 +58,7 @@ const routes = [
             { path: 'notices', component: NoticeListView },
             { path: 'notices/:id', component: NoticeDetailView },
             { path: 'points', name: 'points', component: PointHistoryView },
+            { path: 'ranking', name: 'ranking', component: MonthlyRankingView},
             // feeds
             {
                 path: '/feeds',
