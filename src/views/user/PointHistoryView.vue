@@ -163,7 +163,7 @@ onMounted(() => {
 .point-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 20px 40px 8px;
+  padding: 40px 0 20px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -175,7 +175,7 @@ onMounted(() => {
 }
 .page-title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   margin-left: 4px;
 }
 /* 뒤로가기 버튼 */
