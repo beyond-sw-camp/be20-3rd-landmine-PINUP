@@ -25,6 +25,8 @@ import PointHistoryView from "@/views/user/PointHistoryView.vue";
 // feeds 영역
 import FeedsHomeView from "@/views/feeds/FeedsHomeView.vue";
 import FeedsWriteView from "@/views/feeds/FeedsWriteView.vue";
+import StoreAllView from "@/views/store/StoreAllView.vue";
+import StoreHomeView from "@/views/store/StoreHomeView.vue";
 
 const routes = [
     // 사용자 로그인
@@ -60,6 +62,14 @@ const routes = [
                 name: 'feeds-write',
                 component: FeedsWriteView
             },
+
+            { path: 'store', name: 'store-home', component: StoreHomeView
+            },
+
+            { path: 'store/all', name: 'store-all', component: StoreAllView
+            }
+
+
         ]
     },
 
