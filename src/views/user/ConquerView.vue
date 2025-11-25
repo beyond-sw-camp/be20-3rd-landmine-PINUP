@@ -263,11 +263,12 @@ const startConquest = () => {
 
 .hero {
   position: absolute;
-  bottom: 80px;
+  top: 50%;
   left: 50%;
-  width: 180px;
-  transform: translateX(-50%);
+  width: 190px;
+  transform: translate(-50%, -50%);
   image-rendering: pixelated;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.2));
 }
 
 .start-btn {
