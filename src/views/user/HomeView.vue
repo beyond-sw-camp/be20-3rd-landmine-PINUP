@@ -225,7 +225,7 @@ const logout = () => {
 };
 
 const openNotice = (id) => {
-  window.location.href = `/notice/${id}`;
+  window.location.href = `/notices/${id}`;
 };
 
 onMounted(() => {
