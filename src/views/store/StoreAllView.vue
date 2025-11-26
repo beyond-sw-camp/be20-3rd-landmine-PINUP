@@ -21,7 +21,7 @@
     <!-- 아이템 목록 -->
     <div class="item-grid">
       <StoreItemCard
-          v-for="item in items"
+          v-for="item in filteredItems"
           :key="item.itemId || item.name"
           :item="item"
           @buy="openPopup"
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { StoreApi } from "@/api/StoreApi";
 import StoreItemCard from "@/components/store/StoreItemCard.vue";
@@ -64,7 +64,7 @@ const pageSize = 6;
 const totalPages = ref(3);
 
 const selectedCategory = ref("general");
-const items = ref([]);
+const allItems = ref([]);
 
 /* ⭐ LIMIT / EVENT itemType 생성 */
 function addItemType(item) {
@@ -78,6 +78,7 @@ function addItemType(item) {
   return {
     ...item,
     category: item.category || "MARKER",
+    limitType: item.limitType || "NORMAL",
     itemType: mapped || (item.itemType === "LIMIT" || item.itemType === "EVENT" ? item.itemType : null)
   };
 }
@@ -92,6 +93,18 @@ const dummyItems = [
   { itemId: 6, name: "화산지형 엠블럼", price: 900, createdAt: new Date(), limitType: "NORMAL" }
 ];
 
+const filteredItems = computed(() => {
+  const list = allItems.value
+      .map(addItemType)
+      .filter(item => {
+        if (selectedCategory.value === "limited") return item.limitType === "LIMITED" || item.itemType === "LIMIT";
+        if (selectedCategory.value === "event") return item.limitType === "EVENT" || item.itemType === "EVENT";
+        return true;
+      })
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+  return list;
+});
 
 /* 구매 팝업 */
 const popupItem = ref(null);
@@ -106,10 +119,7 @@ async function loadPage(p) {
     const data = await StoreApi.getPagedItems(p - 1, pageSize);
 
     if (data && Array.isArray(data.items) && data.items.length > 0) {
-      items.value = data.items
-          .map(addItemType)
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
+      allItems.value = data.items;
       totalPages.value = data.totalPages || 3;
       return;
     }
@@ -118,9 +128,7 @@ async function loadPage(p) {
   }
 
   /* 백엔드 실패 시 더미 */
-  items.value = dummyItems
-      .map(addItemType)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  allItems.value = dummyItems;
 
   totalPages.value = 3;
 }

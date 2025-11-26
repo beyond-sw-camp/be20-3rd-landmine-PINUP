@@ -87,7 +87,9 @@ watch(
       if (v) {
         Object.assign(form, {
           ...createDefaultForm(),
-          ...v
+          ...v,
+          category: v.category || "MARKER",
+          limitType: v.limitType || "NORMAL"
         });
       } else {
         resetForm();
