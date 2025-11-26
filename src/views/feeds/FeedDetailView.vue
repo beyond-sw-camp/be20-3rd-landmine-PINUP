@@ -27,10 +27,10 @@ const feedId = computed(() => {
   return isNaN(num) ? null : num
 })
 
-// 현재 로그인 유저 id
+// 현재 로그인 유저 id (라우터 가드 덕분에 여기 올 땐 이미 로그인 돼 있음)
 const currentUserId = computed(() => userStore.userId)
 
-// 작성자 여부 (authorId가 내려온다는 전제, 없으면 항상 false)
+// 작성자 여부
 const isAuthor = computed(() => {
   if (!feed.value) return false
   if (!currentUserId.value) return false
@@ -63,6 +63,7 @@ const loadFeedDetail = async () => {
   error.value = ''
 
   try {
+    // 상세 조회: GET /feeds/view/{feedId}
     const res = await api.get('/feeds/view/' + feedId.value)
     const data = res.data && res.data.data
     if (!data) throw new Error('응답에 data가 없습니다.')
@@ -92,8 +93,9 @@ const loadFeedDetail = async () => {
 const handleLike = async () => {
   if (!feed.value || hasLiked.value) return
 
-  const ok = await userStore.ensureLoggedIn()
-  if (!ok) {
+  // 여기까지 들어왔다는 것 자체가 라우터 가드에서 이미 로그인 검증 통과한 상태
+  if (!currentUserId.value) {
+    ElMessage.error('로그인 정보가 올바르지 않습니다. 다시 로그인해 주세요.')
     router.push({
       path: '/login',
       query: { redirect: route.fullPath || ('/feeds/' + feedId.value) },
@@ -128,14 +130,17 @@ const handleLike = async () => {
   }
 }
 
-// 수정
+// ✨ 수정
 const handleEdit = () => {
   if (!feed.value) return
+
+  // 프론트에서도 한 번 더 방어
   if (!isAuthor.value) {
     ElMessage.warning('본인 피드만 수정할 수 있습니다.')
     return
   }
 
+  // /feeds/:feedId/edit 라우트로 이동
   router.push({
     name: 'feed-edit',
     params: { feedId: feed.value.id },
@@ -177,8 +182,8 @@ const confirmReport = async () => {
   ElMessage.success('신고가 접수된 것으로 처리되었습니다. (TODO)')
 }
 
+// 라우터 가드에서 이미 ensureLoggedIn() 호출됨 → 여기서는 상세만 불러오면 됨
 onMounted(async () => {
-  await userStore.ensureLoggedIn()
   await loadFeedDetail()
 })
 </script>
@@ -302,4 +307,6 @@ onMounted(async () => {
 <style src="@/assets/styles/feeds.css" />
 
 <style scoped>
+
 </style>
+
