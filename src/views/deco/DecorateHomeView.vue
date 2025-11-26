@@ -9,8 +9,18 @@
 
     <div class="map-container">
       <div ref="mapContainer" class="decorate-map"></div>
-
-
+      <div class="province-buttons">
+        <button
+          v-if="hoveredProvince"
+          class="decorate-btn"
+          :style="getButtonStyle(hoveredProvince.position, mapVersion)"
+          @mouseenter="cancelHoverClear"
+          @mouseleave="scheduleHoverClear"
+          @click.stop="goDetail(hoveredProvince.id)"
+        >
+          {{ hoveredProvince.name }} 꾸미기
+        </button>
+      </div>
 
       <div class="zoom-controls">
         <button @click="zoomIn">+</button>
@@ -28,12 +38,14 @@ import "leaflet/dist/leaflet.css";
 import { koreaGeoJson } from "@/data/provinces.js";
 
 const mapContainer = ref(null);
-const provinceButtons = ref([]);
+const hoveredProvince = ref(null);
 const mapVersion = ref(0);
 const router = useRouter();
 
 let map;
 let geoLayer;
+let activeLayer = null;
+let hoverTimeout = null;
 
 const baseStyle = {
   color: "#c7cad3",
@@ -60,6 +72,11 @@ const getButtonStyle = (latlng, version) => {
 
 const goDetail = (provinceId) => {
   if (!provinceId) return;
+  hoveredProvince.value = null;
+  if (activeLayer) {
+    resetHighlight(activeLayer);
+    activeLayer = null;
+  }
   router.push(`/decorate/${provinceId}`);
 };
 
@@ -88,6 +105,38 @@ const getFeatureName = (feature) =>
 const getFeatureProvinceId = (feature) =>
   feature?.properties?.provinceId ?? feature?.id ?? null;
 
+const highlightFeature = (layer) => {
+  layer.setStyle({
+    weight: 3,
+    color: "#1a8cff",
+    fillColor: "#e3f2ff",
+    fillOpacity: 0.8
+  });
+};
+
+const resetHighlight = (layer) => {
+  if (!geoLayer) return;
+  geoLayer.resetStyle(layer);
+};
+
+const cancelHoverClear = () => {
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = null;
+  }
+};
+
+const scheduleHoverClear = () => {
+  cancelHoverClear();
+  hoverTimeout = setTimeout(() => {
+    hoveredProvince.value = null;
+    if (activeLayer) {
+      resetHighlight(activeLayer);
+      activeLayer = null;
+    }
+  }, 150);
+};
+
 onMounted(() => {
   if (map) return;
 
@@ -99,18 +148,44 @@ onMounted(() => {
     attributionControl: false
   }).setView([36.5, 127.8], 7);
 
+  const bumpVersion = () => {
+    mapVersion.value += 1;
+  };
+  map.on("move", bumpVersion);
+  map.on("zoom", bumpVersion);
+
   const onEachFeature = (feature, layer) => {
     const provinceId = getFeatureProvinceId(feature);
     if (!provinceId) return;
-    const center = layer.getBounds().getCenter();
-    provinceButtons.value.push({
-      id: provinceId,
-      name: getFeatureName(feature),
-      position: center
+    layer.on({
+      mouseover: (event) => {
+        cancelHoverClear();
+        if (activeLayer && activeLayer !== event.target) {
+          resetHighlight(activeLayer);
+        }
+        activeLayer = event.target;
+        highlightFeature(activeLayer);
+        hoveredProvince.value = {
+          id: provinceId,
+          name: getFeatureName(feature),
+          position: event.latlng
+        };
+      },
+      mousemove: (event) => {
+        cancelHoverClear();
+        if (hoveredProvince.value?.id === provinceId) {
+          hoveredProvince.value = {
+            ...hoveredProvince.value,
+            position: event.latlng
+          };
+        }
+      },
+      mouseout: () => {
+        scheduleHoverClear();
+      },
+      click: () => goDetail(provinceId)
     });
   };
-
-  provinceButtons.value = [];
   geoLayer = L.geoJSON(resolveGeoJson(), {
     style: baseStyle,
     onEachFeature
