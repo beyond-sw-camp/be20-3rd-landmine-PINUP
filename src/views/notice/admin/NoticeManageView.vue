@@ -27,7 +27,7 @@
           <tr v-for="notice in notices" :key="notice.noticeId" @click="goToNoticeDetail(notice.noticeId)" style="cursor: pointer;">
             <td>{{ notice.noticeId }}</td>
             <td>{{ notice.noticeTitle }}</td>
-            <td>{{ notice.createdAt }}</td>
+            <td>{{ formatDate(notice.createdAt) }}</td>
             <td>
               <button class="manage-btn edit" @click.stop="editNotice(notice.noticeId)">수정</button>
               <button class="manage-btn delete" @click.stop="deleteNotice(notice.noticeId)">삭제</button>
@@ -48,6 +48,15 @@ import noticeApi from '@/api/notice';
 
 const router = useRouter();
 const notices = ref([]);
+
+function formatDate(datetimeString) {
+  if (!datetimeString) return '';
+  const date = new Date(datetimeString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 async function loadNotices() {
   try {

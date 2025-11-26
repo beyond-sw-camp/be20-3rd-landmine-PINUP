@@ -49,7 +49,13 @@
     <section class="dashboard-map">
       <!-- 🏆 월간 랭킹 섹션 -->
       <div class="ranking-card">
-        <h3>🏆 월간 랭킹</h3>
+        <div class="ranking-header">
+          <h3>🏆 월간 랭킹</h3>
+          <button class="ranking-more-btn" @click="goToRanking">
+            랭킹 전체 보기
+          </button>
+        </div>
+
         <table class="ranking-table">
           <thead>
           <tr>
@@ -88,19 +94,13 @@
           </tr>
           </thead>
           <tbody>
-          <!-- 1) 데이터 없을 때 표시 -->
-          <tr v-if="notices.length === 0">
-            <td colspan="2">공지사항을 불러오는 중...</td>
-          </tr>
-
-          <!-- 2) 데이터 있을 때 출력 -->
           <tr
               v-for="n in notices"
-              :key="n.id"
-              @click="openNotice(n.id)"
+              :key="n.noticeId"
+              @click="openNotice(n.noticeId)"
               style="cursor: pointer;"
           >
-            <td>{{ n.title }}</td>
+            <td>{{ n.noticeTitle }}</td>
             <td>{{ formatDate(n.createdAt) }}</td>
           </tr>
           </tbody>
@@ -120,6 +120,7 @@ import MyPageView from "@/views/user/MyPageView.vue";
 import L from "leaflet";
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import { useRouter } from 'vue-router'
 
 const formatDate = (d) => {
   return new Date(d).toLocaleDateString();
@@ -167,16 +168,23 @@ onMounted(() => {
 });
 
 // 랭킹 가져오기
-const ranking = ref([]);
+const ranking = ref([])   // 랭킹 리스트 상태
+const router = useRouter()
+
+const goToRanking = () => {
+  router.push({ name: 'ranking' })   // 라우터에서 name:'ranking' 등록함
+}
 
 const loadRanking = async () => {
   try {
     const now = new Date();
     now.setMonth(now.getMonth() - 1);
-    const ym = now.toISOString().slice(0, 7);
 
-    const { data } = await axios.get("http://localhost:8080/api/rankings/query/monthly/top100?ym=2025-10", {
-      params: { ym },
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+
+    const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
+      params: { year, month },
       withCredentials: true
     });
 
@@ -197,29 +205,18 @@ const notices = ref([]);
 
 const loadNotices = async () => {
   try {
-    const res = await fetch("/api/notices/latest?limit=3");
+    const res = await fetch("http://localhost:8080/api/notices/latest?limit=2", {
+      credentials: "include"
+    });
+    console.log("📌 공지 응답:", notices.value);
 
-    if (!res.ok) {
-      throw new Error("공지사항 API 호출 실패");
-    }
+
+    if (!res.ok) throw new Error("공지사항 API 호출 실패");
 
     notices.value = await res.json();
 
   } catch (e) {
-    console.error("공지사항 API 실패 → 임시 데이터 사용");
-
-    notices.value = [
-      {
-        id: 1,
-        title: "[공지] 시스템 점검 안내 (임시 공지)",
-        createdAt: "2025-12-01"
-      },
-      {
-        id: 2,
-        title: "🔧 테스트 서버 점검 중입니다!",
-        createdAt: "2025-12-02"
-      }
-    ];
+    console.error("❌ 공지사항 조회 실패", e);
   }
 };
 
@@ -228,7 +225,7 @@ const logout = () => {
 };
 
 const openNotice = (id) => {
-  window.location.href = `/notice/${id}`;
+  window.location.href = `/notices/${id}`;
 };
 
 onMounted(() => {
@@ -237,7 +234,6 @@ onMounted(() => {
 });
 
 </script>
-
 <style scoped>
 
 * {
@@ -374,12 +370,37 @@ onMounted(() => {
   padding: 20px;
 }
 
+.ranking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ranking-header h3 {
+  margin: 0;
+}
+
 .ranking-table {
   width: 100%;
   text-align: center;
   margin: 10px 0 20px 0;
 }
 
+.ranking-more-btn {
+  font-size: 10px;
+  color: #1A8CFF;
+  background: rgba(90, 53, 255, 0.06);
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+.ranking-more-btn:hover {
+  outline: none;
+  box-shadow: 0 0 4px rgba(26, 140, 255, 0.6);
+}
 /* 랭킹 & 공지사항 공통 */
 .ranking-table th,
 .notice-table th {

@@ -107,25 +107,24 @@ const formatAmount = (amount) => {
 // API 호출: 총 포인트
 async function fetchTotalPoint(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId)}`
-  )
-  if (!res.ok) {
-    throw new Error(`총 포인트 조회 실패: ${res.status}`)
-  }
-  // 응답이 숫자 하나라고 가정
-  return res.json()
+      `http://localhost:8080/points/total?userId=${encodeURIComponent(userId)}`,
+      { credentials: "include" }
+  );
+
+  if (!res.ok) throw new Error(`총 포인트 조회 실패: ${res.status}`);
+
+  return res.json();
 }
 
-// API 호출: 포인트 로그 리스트
 async function fetchPointLogs(userId) {
   const res = await fetch(
-      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId)}`
-  )
-  if (!res.ok) {
-    throw new Error(`포인트 로그 조회 실패: ${res.status}`)
-  }
-  // [{ date, description, amount }, ...]
-  return res.json()
+      `http://localhost:8080/points/logs?userId=${encodeURIComponent(userId)}`,
+      { credentials: "include" }
+  );
+
+  if (!res.ok) throw new Error(`포인트 로그 조회 실패: ${res.status}`);
+
+  return res.json();
 }
 
 // 전체 로딩
@@ -163,7 +162,7 @@ onMounted(() => {
 .point-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 20px 40px 8px;
+  padding: 40px 0 20px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -175,7 +174,7 @@ onMounted(() => {
 }
 .page-title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   margin-left: 4px;
 }
 /* 뒤로가기 버튼 */
