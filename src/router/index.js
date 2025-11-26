@@ -24,10 +24,6 @@ import AdminNoticeDetailView from '@/views/notice/admin/AdminNoticeDetailView.vu
 // 포인트 영역
 import PointHistoryView from '@/views/user/PointHistoryView.vue'
 
-// feeds 영역
-import FeedsHomeView from '@/views/feeds/FeedsHomeView.vue'
-import FeedsWriteView from '@/views/feeds/FeedsWriteView.vue'
-import PointHistoryView from "@/views/user/PointHistoryView.vue";
 // 랭킹 영역
 import MonthlyRankingView from "@/views/user/MonthlyRankingView.vue";
 
