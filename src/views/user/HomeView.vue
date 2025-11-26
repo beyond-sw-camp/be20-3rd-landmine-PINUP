@@ -123,6 +123,8 @@ import axios from "axios";
 import {nextTick, onMounted, ref} from "vue";
 import { useRouter } from 'vue-router'
 
+const conqueredRegionIds = ref([]);
+
 const formatDate = (d) => {
   return new Date(d).toLocaleDateString();
 };
@@ -222,9 +224,8 @@ const openNotice = (id) => {
 let map = null;
 
 const initMap = async () => {
-  await nextTick(); // DOM 렌더링 보장
+  await nextTick();
 
-  // 이미 초기화된 지도 있으면 제거 (hot reload 대비)
   if (map !== null) {
     map.remove();
   }
@@ -236,7 +237,7 @@ const initMap = async () => {
     zoomControl: true,
   });
 
-  // 타일 레이어 (밝은 회색, 깔끔한 배경)
+  // 타일 레이어
   L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
       {
@@ -265,13 +266,32 @@ const initMap = async () => {
   } catch (err) {
     console.error("❌ GeoJSON 로드 실패:", err);
   }
-
 };
 
-onMounted(() => {
+// 정복 데이터 가져오기
+const loadConquerRegions = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/conquer/my-regions", {
+      withCredentials: true
+    });
+
+    // 예: [101, 203, 502]
+    conqueredRegionIds.value = res.data;
+
+    console.log("정복 지역:", conqueredRegionIds.value);
+
+  } catch (err) {
+    console.error("❌ 정복 지역 조회 실패:", err);
+  }
+};
+
+
+onMounted(async () => {
   loadUser();
   loadRanking();
   loadNotices();
+
+  await loadConquerRegions();
   initMap();
 });
 
