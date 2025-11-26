@@ -419,18 +419,18 @@ const finishConquest = async () => {
 
 .scene {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 60px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 24px 24px 120px;
+  padding: 24px 24px 24px;
   box-sizing: border-box;
 }
 
 .hero {
   position: relative;
   width: min(150px, 30%);
-  transform: none;
+  transform: translateY(55px);
   image-rendering: pixelated;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.2));
 }
