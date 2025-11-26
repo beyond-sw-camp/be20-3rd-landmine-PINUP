@@ -41,8 +41,8 @@
         <div class="notif-box" :class="{ show: notifOpen }">
           <div class="notif-header">알림</div>
           <ul id="notif-list">
-            <li v-for="(item, idx) in notifications" :key="idx">
-              {{ item }}
+            <li v-for="(item, idx) in notifications" :key="idx" :class="getNotificationItemClass(item)">
+              {{ item.notificationMessage }} <!-- item.message에서 item.notificationMessage로 수정 -->
             </li>
             <li v-if="notifications.length === 0">알림이 없습니다.</li>
           </ul>
@@ -57,24 +57,37 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed } from "vue";
+import { useRoute } from 'vue-router';
+import { useNotificationStore } from '@/stores/notificationStore';
 
 const route = useRoute();
+const notifStore = useNotificationStore();
 
-// ⭐ 현재 경로 기반으로 active 메뉴 표시
+// 현재 경로 기반으로 active 메뉴 표시
 const isActive = (path) => route.path.startsWith(path);
 
-// ⭐ 알림 기능 (SSE 연동 가능)
+// Pinia 스토어의 notifications 상태를 computed로 가져와 반응성을 유지합니다.
+const notifications = computed(() => notifStore.notifications);
+
+// 알림창을 열고 닫는 상태
 const notifOpen = ref(false);
-const notifications = ref([]);
 
 const toggleNotif = () => {
   notifOpen.value = !notifOpen.value;
 };
 
-// SSE 연동 시 실제 데이터 push 가능
-// e.g. notifications.value.unshift("새 알림이 도착했습니다!");
+// 알림 타입에 따라 CSS 클래스를 반환하는 함수
+const getNotificationItemClass = (item) => {
+  switch (item.notificationType) {
+    case 'SUSPEND':
+      return 'notif-suspended';
+    case 'REPORT_HANDLED':
+      return 'notif-report-handled';
+    default:
+      return 'notif-default';
+  }
+};
 </script>
 
 <style scoped>
@@ -193,6 +206,19 @@ const toggleNotif = () => {
   padding: 8px 10px;
   border-radius: 8px;
   font-size: 13px;
+}
+
+/* 알림 타입별 스타일 */
+#notif-list li.notif-suspended {
+  background-color: #FFDDDD; /* 연한 빨간색 */
+}
+
+#notif-list li.notif-report-handled {
+  background-color: #FFFFDD; /* 연한 노란색 */
+}
+
+#notif-list li.notif-default {
+  background-color: #DDFFDD; /* 연한 초록색 */
 }
 
 @media (max-width: 1080px) {

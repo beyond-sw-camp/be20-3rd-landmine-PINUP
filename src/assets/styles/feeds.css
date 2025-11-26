@@ -238,6 +238,159 @@
     color: var(--pinup-text-sub);
 }
 
+/* ===== 피드 상세 뷰 ===== */
+
+.feed-detail-page {
+    padding: 24px 32px;
+}
+
+@media (max-width: 960px) {
+    .feed-detail-page {
+        padding: 16px 18px;
+    }
+}
+
+/* 상단 오른쪽 버튼 영역 */
+.feed-top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.edit-btn,
+.delete-btn,
+.report-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.report-btn {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* 상세 메인 레이아웃 */
+.detail-container {
+    margin-top: 20px;
+    background: var(--pinup-card-bg);
+    border-radius: 18px;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    gap: 32px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+@media (max-width: 1024px) {
+    .detail-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.detail-image-wrapper {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.detail-main-image {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--pinup-text-main);
+}
+
+/* 작성자 + 좋아요 한 줄 */
+.detail-author-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.detail-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-author-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    object-fit: cover;
+}
+
+.detail-author-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detail-author-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pinup-text-main);
+}
+
+.detail-created-at {
+    font-size: 12px;
+    color: var(--pinup-text-sub);
+}
+
+/* 좋아요 버튼 (작성자 줄 오른쪽) */
+.like-btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.like-btn:hover {
+    filter: brightness(0.97);
+}
+
+.detail-text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--pinup-text-main);
+    white-space: pre-wrap;
+}
+
 @media (max-width: 1280px) {
     .feed-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
