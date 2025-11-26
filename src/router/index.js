@@ -93,6 +93,7 @@ const routes = [
             { path: 'notices/:id', component: AdminNoticeDetailView },
             { path: 'reports', component: ReportListView },
             { path: 'reports/:id', component: ReportHandleView },
+            { path: 'store', component: AdminStoreView },
         ]
     }
 ]
@@ -103,6 +104,7 @@ const router = createRouter({
 })
 
 import axiosInstance from "@/api/axios.js";
+import AdminStoreView from "@/views/admin/AdminStoreView.vue";
 
 async function checkSession() {
     try {
