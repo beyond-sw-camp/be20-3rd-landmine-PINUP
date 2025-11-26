@@ -10,17 +10,7 @@
     <div class="map-container">
       <div ref="mapContainer" class="decorate-map"></div>
 
-      <div class="province-buttons">
-        <button
-            v-for="feature in provinceButtons"
-            :key="feature.id"
-            class="decorate-btn"
-            :style="getButtonStyle(feature.position, mapVersion)"
-            @click="goDetail(feature.id)"
-        >
-          {{ feature.name }} 꾸미기
-        </button>
-      </div>
+
 
       <div class="zoom-controls">
         <button @click="zoomIn">+</button>
@@ -85,6 +75,19 @@ const zoomOut = () => {
   }
 };
 
+const resolveGeoJson = () => {
+  if (typeof window === "undefined") {
+    return koreaGeoJson;
+  }
+  return window.statesData ?? koreaGeoJson;
+};
+
+const getFeatureName = (feature) =>
+  feature?.properties?.SIDO_NM ?? feature?.properties?.name ?? "미지정 지역";
+
+const getFeatureProvinceId = (feature) =>
+  feature?.properties?.provinceId ?? feature?.id ?? null;
+
 onMounted(() => {
   if (map) return;
 
@@ -96,30 +99,19 @@ onMounted(() => {
     attributionControl: false
   }).setView([36.5, 127.8], 7);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 10,
-    minZoom: 6
-  }).addTo(map);
-
-  const bounds = L.latLngBounds([33.0, 124.5], [39.5, 130.5]);
-  map.setMaxBounds(bounds);
-  map.on("drag", () => map.panInsideBounds(bounds, { animate: false }));
-  const bumpVersion = () => {
-    mapVersion.value += 1;
-  };
-  map.on("move", bumpVersion);
-  map.on("zoom", bumpVersion);
-
   const onEachFeature = (feature, layer) => {
+    const provinceId = getFeatureProvinceId(feature);
+    if (!provinceId) return;
     const center = layer.getBounds().getCenter();
     provinceButtons.value.push({
-      id: feature.properties?.id,
-      name: feature.properties?.name,
+      id: provinceId,
+      name: getFeatureName(feature),
       position: center
     });
   };
 
-  geoLayer = L.geoJSON(koreaGeoJson, {
+  provinceButtons.value = [];
+  geoLayer = L.geoJSON(resolveGeoJson(), {
     style: baseStyle,
     onEachFeature
   }).addTo(map);
