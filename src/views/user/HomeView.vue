@@ -245,6 +245,27 @@ const initMap = async () => {
         opacity: 0.9,
       }
   ).addTo(map);
+
+  try {
+    const geoData = await fetch(
+        "https://raw.githubusercontent.com/vuski/admdongkor/master/ver20250401/HangJeongDong_ver20250401.geojson"
+    ).then((res) => res.json());
+
+    L.geoJSON(geoData, {
+      style: {
+        color: "#e5e5e5",
+        weight: 1,
+        fillOpacity: 0.05,
+      },
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(feature.properties.adm_nm);
+      },
+    }).addTo(map);
+
+  } catch (err) {
+    console.error("❌ GeoJSON 로드 실패:", err);
+  }
+
 };
 
 onMounted(() => {
