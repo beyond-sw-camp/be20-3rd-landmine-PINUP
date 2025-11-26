@@ -182,6 +182,15 @@ const confirmReport = async () => {
   ElMessage.success('신고가 접수된 것으로 처리되었습니다. (TODO)')
 }
 
+// 닉네임 클릭시 상대 프로필 조회로 이동
+const goToUserProfile = () => {
+  if (!feed.value || !feed.value.authorId) return
+
+  router.push({
+    path: `/users/${feed.value.authorId}`
+  }).catch(() => {})
+}
+
 // 라우터 가드에서 이미 ensureLoggedIn() 호출됨 → 여기서는 상세만 불러오면 됨
 onMounted(async () => {
   await loadFeedDetail()
@@ -256,7 +265,10 @@ onMounted(async () => {
                 alt="작성자 프로필"
             />
             <div class="detail-author-meta">
-              <span class="detail-author-name">
+              <span
+                  class="detail-author-name clickable"
+                  @click="goToUserProfile"
+              >
                 {{ feed.authorName }}
               </span>
               <span v-if="formattedCreatedAt" class="detail-created-at">

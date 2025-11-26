@@ -391,6 +391,17 @@
     white-space: pre-wrap;
 }
 
+.clickable {
+    cursor: pointer;
+    color: #1A8CFF;
+    font-weight: 600;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
 @media (max-width: 1280px) {
     .feed-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
