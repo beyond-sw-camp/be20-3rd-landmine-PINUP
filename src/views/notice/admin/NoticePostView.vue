@@ -34,7 +34,6 @@ import noticeApi from '@/api/notice';
 const router = useRouter();
 
 const notice = ref({
-  adminId: 1, // TODO: 실제 로그인된 관리자 ID로 교체해야 합니다.
   noticeTitle: '',
   noticeContent: ''
 });
