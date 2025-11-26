@@ -1,17 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserDataStore } from '@/stores/userDataStore'
 
 // 로그인 페이지들
 import LoginView from '@/views/login/LoginView.vue'
 import AdminLoginView from '@/views/login/AdminLoginView.vue'
 
-// 사용자 영역 레이아웃 + 페이지
+// 사용자 영역
 import AppLayout from '@/components/layouts/AppLayout.vue'
 import HomeView from '@/views/user/HomeView.vue'
 import MyPageView from '@/views/user/MyPageView.vue'
-import DecorateHomeView from "@/views/user/DecorateHomeView.vue";
-import DecorateProvinceView from "@/views/user/DecorateProvinceView.vue";
-import ConquerView from "@/views/user/ConquerView.vue";
+
+// 점령 및 지도꾸미기 영역
+import DecorateHomeView from "@/views/deco/DecorateHomeView.vue";
+import DecorateProvinceView from "@/views/deco/DecorateProvinceView.vue";
+import ConquerView from "@/views/conquer/ConquerView.vue";
 
 // 관리자 영역
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
@@ -25,8 +26,7 @@ import NoticeEditView from '@/views/notice/admin/NoticeEditView.vue'
 import AdminNoticeDetailView from '@/views/notice/admin/AdminNoticeDetailView.vue'
 
 // 포인트 영역
-import PointHistoryView from '@/views/user/PointHistoryView.vue'
-
+import PointHistoryView from "@/views/user/PointHistoryView.vue";
 // 랭킹 영역
 import MonthlyRankingView from "@/views/user/MonthlyRankingView.vue";
 
@@ -43,16 +43,16 @@ const routes = [
     // 사용자 로그인
     {
         path: '/login',
-        component: LoginView,
+        component: LoginView
     },
 
     // 관리자 로그인
     {
         path: '/admin/login',
-        component: AdminLoginView,
+        component: AdminLoginView
     },
 
-    // 사용자 레이아웃
+    // 사용자 전용 레이아웃
     {
         path: '/',
         component: AppLayout,
@@ -69,29 +69,14 @@ const routes = [
             { path: 'ranking', name: 'ranking', component: MonthlyRankingView},
             // feeds
             {
-                path: 'feeds',
-                name: 'feeds',
-                component: FeedsHomeView,
+                path: '/feeds',
+                name : 'feeds',
+                component : FeedsHomeView
             },
             {
                 path: 'feeds/write',
                 name: 'feeds-write',
-                component: FeedsWriteView,
-                meta: { requiresAuth: true },
-            },
-            {
-                path: 'feeds/:feedId',
-                name: 'feed-detail',
-                component: () => import('@/views/feeds/FeedDetailView.vue'),
-                props: true,
-                meta: { requiresAuth: true },
-            },
-            {
-                path: 'feeds/:feedId/edit',
-                name: 'feed-edit',
-                component: () => import('@/views/feeds/FeedsEditView.vue'),
-                props: true,
-                meta: { requiresAuth: true },
+                component: FeedsWriteView
             },
 
             { path: 'store', name: 'store-home', component: StoreHomeView
@@ -104,7 +89,7 @@ const routes = [
         ]
     },
 
-    // 관리자 전용
+    // 관리자 전용 라우트
     {
         path: '/admin',
         children: [
@@ -122,7 +107,7 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes,
+    routes
 })
 
 import axiosInstance from "@/api/axios.js";
@@ -160,5 +145,3 @@ router.beforeEach(async (to, from, next) => {
 });
 
 export default router
-
-
