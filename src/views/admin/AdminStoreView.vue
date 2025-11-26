@@ -14,7 +14,6 @@
           <tr>
             <th>번호</th>
             <th>아이템명</th>
-            <th>카테고리</th>
             <th>가격</th>
             <th>등록일</th>
             <th>판매 정책</th>
@@ -27,22 +26,38 @@
           <tr v-for="(item, idx) in items" :key="item.itemId">
             <td>{{ idx + 1 + page * size }}</td>
             <td>{{ item.name }}</td>
+            <td>{{ item.price }} P</td>
+            <td>{{ formatDate(item.createdAt) }}</td>
+
+            <!-- 판매 정책 뱃지 ONLY -->
             <td>
-              {{ getCategoryMeta(item.category).label }}
+                <span
+                    v-if="item.limitType === 'LIMITED'"
+                    class="policy-badge limited"
+                >LIMIT</span>
+
+              <span
+                  v-else-if="item.limitType === 'EVENT'"
+                  class="policy-badge event"
+              >EVENT</span>
+
+              <span v-else>
+                  일반
+                </span>
             </td>
 
-            <td>{{ item.price }} 포인트</td>
-            <td>{{ formatDate(item.createdAt) }}</td>
+            <!-- 판매중 / 중지됨 토글 -->
             <td>
-               <span class="policy-badge" :class="getPolicyMeta(item.limitType).className">
-                {{ getPolicyMeta(item.limitType).label }}
-              </span>
+              <button
+                  class="status-toggle"
+                  :class="item.isActive ? 'active' : 'disabled'"
+                  @click="toggleStatus(item)"
+              >
+                {{ item.isActive ? "판매중" : "중지됨" }}
+              </button>
             </td>
-            <td>
-              <span class="status" :class="item.isActive ? 'active' : 'disabled'">
-                {{ item.isActive ? '판매중' : '중지됨' }}
-              </span>
-            </td>
+
+            <!-- 수정 / 삭제 -->
             <td>
               <button class="edit-btn" @click="openForm(item)">수정</button>
               <button class="delete-btn" @click="deleteItem(item.itemId)">삭제</button>
@@ -52,7 +67,7 @@
         </table>
 
         <!-- Pagination -->
-        <div class="pagination">
+        <div class="pagination" v-if="totalPages > 0">
           <button @click="changePage(page - 1)" :disabled="page === 0">←</button>
 
           <button
@@ -69,12 +84,12 @@
 
       </section>
 
-      <!-- 등록/수정 모달 -->
+      <!-- 등록 / 수정 모달 -->
       <StoreItemForm
           v-if="showForm"
           :editItem="selectedItem"
           @close="closeForm"
-          @saved="reload()"
+          @saved="reload"
       />
     </main>
   </div>
@@ -94,59 +109,61 @@ const totalPages = ref(0);
 const showForm = ref(false);
 const selectedItem = ref(null);
 
-const formatDate = (d) => new Date(d).toISOString().slice(0, 10);
+const formatDate = (d) =>
+    d ? new Date(d).toISOString().slice(0, 10) : "-";
 
-const CATEGORY_META = {
-  MARKER: { label: "마커", className: "marker" },
-  SPECIALTY: { label: "특산품", className: "specialty" },
-  BUILDING: { label: "건물", className: "building" },
-  TILE: { label: "타일", className: "tile" }
-};
-
-const POLICY_META = {
-  NORMAL: { label: "일반", className: "normal" },
-  LIMITED: { label: "LIMIT", className: "limited" },
-  EVENT: { label: "EVENT", className: "event" }
-};
-
-function getCategoryMeta(category) {
-  return CATEGORY_META[category] || { label: category || "기타", className: "default" };
-}
-
-function getPolicyMeta(limitType) {
-  return POLICY_META[limitType] || POLICY_META.NORMAL;
-}
-
+// 목록 가져오기
 async function reload() {
   const res = await AdminStoreApi.getItems(page.value, size.value);
-  items.value = res.items;
-  totalPages.value = res.totalPages;
+  items.value = res.items || [];
+  totalPages.value = res.totalPages || 0;
 }
 
+// 페이지 이동
 function changePage(p) {
   if (p < 0 || p >= totalPages.value) return;
   page.value = p;
   reload();
 }
 
+// 폼 열기
 function openForm(item = null) {
   selectedItem.value = item;
   showForm.value = true;
 }
 
+// 폼 닫기
 function closeForm() {
-  selectedItem.value = null;
   showForm.value = false;
+  selectedItem.value = null;
 }
 
+// 🔥 판매 상태 토글
+async function toggleStatus(item) {
+  const prev = item.isActive;
+  const next = !prev;
+
+  // optimistic UI
+  item.isActive = next;
+
+  try {
+    await AdminStoreApi.updateItem(item.itemId, { isActive: next });
+  } catch (e) {
+    alert("상태 변경 실패");
+    item.isActive = prev; // rollback
+  }
+}
+
+// 삭제
 async function deleteItem(id) {
-  if (!confirm("삭제하시겠습니까?")) return;
+  if (!confirm("정말 삭제하시겠습니까?")) return;
   await AdminStoreApi.deleteItem(id);
   reload();
 }
 
 onMounted(reload);
 </script>
+
 
 <style scoped>
 .layout {
@@ -200,34 +217,28 @@ td {
   text-align: center;
 }
 
-.status.active {
-  color: #3ac45d;
-  font-weight: 700;
+/* 판매 상태 토글 버튼 */
+.status-toggle {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.status.disabled {
-  color: #ff5e5e;
-  font-weight: 700;
+.status-toggle.active {
+  background: #e6ffef;
+  color: #1fa04a;
 }
 
-/* category badge */
-.category-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+.status-toggle.disabled {
+  background: #ffe6e6;
+  color: #d72727;
 }
 
-.category-badge.marker { background: #2563eb; }
-.category-badge.specialty { background: #059669; }
-.category-badge.building { background: #7c3aed; }
-.category-badge.tile { background: #f59e0b; }
-.category-badge.default { background: #6b7280; }
-
+/* 판매 정책 뱃지 */
 .policy-badge {
-  display: inline-block;
   padding: 6px 12px;
   border-radius: 14px;
   font-size: 12px;
@@ -235,12 +246,17 @@ td {
   color: #fff;
 }
 
-.policy-badge.normal { background: #6b7280; }
-.policy-badge.limited { background: #ef4444; }
-.policy-badge.event { background: #1f66ff; }
+.policy-badge.limited {
+  background: #ef4444;
+}
 
-/* buttons */
-.edit-btn, .delete-btn {
+.policy-badge.event {
+  background: #2563eb;
+}
+
+/* 관리 버튼 */
+.edit-btn,
+.delete-btn {
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
