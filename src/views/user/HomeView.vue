@@ -196,13 +196,13 @@ const conquer = ref({
 
 // 사용자 정보 가져오기
 const user = ref(null);
+
 // ✅ 팝업 상태
 const isPopupOpen = ref(false);
 const isLoadingRecommend = ref(false);
 const recommendResult = ref(null);
-// 여기까지가 팝업
-const router = useRouter() // 라우트 위치 수정
 
+const router = useRouter();
 const loadUser = async () => {
   try {
     const res = await axios.get("http://localhost:8080/api/user/me", {
@@ -211,7 +211,6 @@ const loadUser = async () => {
 
     if (res.data.authenticated) {
       user.value = {
-        id: res.data.id, // ⚠️ 백엔드에서 id도 내려주도록 해줘야 함
         name: res.data.name,
         email: res.data.email,
         picture: res.data.picture
@@ -292,7 +291,6 @@ const logout = () => {
 const openNotice = (id) => {
   window.location.href = `/notices/${id}`;
 };
-/// 팝업 넣기
 // ✅ 팝업 제어
 const closePopup = () => {
   isPopupOpen.value = false;
@@ -300,21 +298,17 @@ const closePopup = () => {
 
 // ✅ 추천 API 호출
 const requestRecommend = async () => {
-  if (!user.value || !user.value.id) {
-    alert("사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
-    return;
-  }
-
+  const userId = user.value?.id ?? 1;   // ← id 없으면 1 사용 (안전)
   isLoadingRecommend.value = true;
   recommendResult.value = null;
 
   try {
     const { data } = await axios.post(
-        `http://localhost:8080/api/recommend/${user.value.id}`,
+        `http://localhost:8080/api/recommend/${userId}`, // ★ fallback 적용됨
         {},
         { withCredentials: true }
     );
-    // data: { region, title, description }
+
     recommendResult.value = data;
   } catch (e) {
     console.error("추천 API 실패", e);
@@ -326,7 +320,6 @@ const requestRecommend = async () => {
 
 
 onMounted(() => {
-  loadUser(); // 팝업 때문에 추가
   loadRanking();
   loadNotices();
 });
@@ -612,6 +605,8 @@ onMounted(() => {
   background: #f1f0ff;
   color: #777;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: block;
+  margin: 0 auto;   /* 좌우 자동 → 가로 중앙 정렬 */
 }
 
 .itinerary-text {
@@ -642,5 +637,4 @@ onMounted(() => {
     font-size: 18px;
   }
 }
-
 </style>
