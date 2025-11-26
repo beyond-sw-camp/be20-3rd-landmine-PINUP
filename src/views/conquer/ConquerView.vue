@@ -35,8 +35,7 @@
             :disabled="actionLoading"
             @click="startConquest"
           >
-            <img :src="buttonIcons.start" alt="시작 캐릭터" />
-            <span>점령 시작</span>
+            점령 시작
           </button>
           <button
             v-else-if="showFinishButton"
@@ -44,8 +43,7 @@
             :disabled="actionLoading"
             @click="finishConquest"
           >
-            <img :src="buttonIcons.finish" alt="점령 중 캐릭터" />
-            <span>점령 종료</span>
+            점령 종료
           </button>
           <button
             v-else-if="showRetryButton"
@@ -53,8 +51,7 @@
             :disabled="actionLoading"
             @click="resetConquest"
           >
-            <img :src="buttonIcons.retry" alt="재도전 캐릭터" />
-            <span>다시 도전</span>
+            다시 도전
           </button>
         </div>
       </section>
@@ -84,12 +81,6 @@ const isGeoSupported = typeof window !== "undefined" && "geolocation" in navigat
 const sceneAsset = (filename) => `${import.meta.env.BASE_URL ?? "/"}images/${filename}`;
 const pageBackground = sceneAsset("background.png");
 const sceneCardBackground = sceneAsset("scene_card_background.png");
-const buttonIcons = {
-  start: sceneAsset("1_standing.png"),
-  finish: sceneAsset("2_gif.gif"),
-  retry: sceneAsset("3_failed.png")
-};
-
 const SCENE_VARIANTS = {
   idle: {
     character: sceneAsset("1_standing.png"),
@@ -429,17 +420,17 @@ const finishConquest = async () => {
 .scene {
   width: 100%;
   height: 100%;
-  position: relative;
-  padding-bottom: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 24px 24px 120px;
   box-sizing: border-box;
 }
 
 .hero {
-  position: absolute;
-  bottom: 130px;
-  left: 50%;
-  width: min(300px, 60%);
-  transform: translateX(-50%);
+  position: relative;
+  width: min(150px, 30%);
+  transform: none;
   image-rendering: pixelated;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.2));
 }
@@ -456,11 +447,11 @@ const finishConquest = async () => {
 .start-btn,
 .finish-btn,
 .retry-btn {
-  width: 100%;
-  padding: 18px 22px;
+  width: min(280px, 70%);
+  padding: 14px 18px;
   border: none;
   border-radius: 18px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
