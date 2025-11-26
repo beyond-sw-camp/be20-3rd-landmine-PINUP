@@ -118,8 +118,9 @@
 <script setup>
 import MyPageView from "@/views/user/MyPageView.vue";
 import L from "leaflet";
+import 'leaflet/dist/leaflet.css';
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import {nextTick, onMounted, ref} from "vue";
 import { useRouter } from 'vue-router'
 
 const formatDate = (d) => {
@@ -156,10 +157,6 @@ const loadUser = async () => {
     window.location.href = "/login";
   }
 };
-
-onMounted(() => {
-  loadUser();
-});
 
 // 랭킹 가져오기
 const ranking = ref([])   // 랭킹 리스트 상태
@@ -211,17 +208,50 @@ const loadNotices = async () => {
   }
 };
 
+// 로그아웃
 const logout = () => {
   window.location.href = "http://localhost:8080/logout";
 };
 
+// 공지사항 클릭시 자세히보기로 이동
 const openNotice = (id) => {
   window.location.href = `/notices/${id}`;
 };
 
+// 지도
+let map = null;
+
+const initMap = async () => {
+  await nextTick(); // DOM 렌더링 보장
+
+  // 이미 초기화된 지도 있으면 제거 (hot reload 대비)
+  if (map !== null) {
+    map.remove();
+  }
+
+  // 지도 생성
+  map = L.map("map", {
+    center: [36.5, 127.9],
+    zoom: 7,
+    zoomControl: true,
+  });
+
+  // 타일 레이어 (밝은 회색, 깔끔한 배경)
+  L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+      {
+        attribution: "© OpenStreetMap, © CartoDB",
+        maxZoom: 18,
+        opacity: 0.9,
+      }
+  ).addTo(map);
+};
+
 onMounted(() => {
+  loadUser();
   loadRanking();
   loadNotices();
+  initMap();
 });
 
 </script>
@@ -421,10 +451,18 @@ onMounted(() => {
 
 /* 지도 섹션 */
 .map-card {
-  background: #FFFFFF;
+  background: #fff;
   border-radius: 26px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   padding: 20px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+}
+
+#map {
+  width: 100%;
+  height: 520px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 15px;
 }
 
 </style>
