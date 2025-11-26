@@ -1,5 +1,5 @@
 <template>
-  <div class="conquer-page">
+  <div class="conquer-page" :style="{ backgroundImage: `url(${pageBackground})` }">
     <section class="conquer-shell">
       <header class="conquer-header">
         <div class="title-wrap">
@@ -24,11 +24,8 @@
         </ul>
       </section>
 
-      <section class="scene-card">
-        <div
-          class="scene"
-          :style="{ backgroundImage: `url(${currentScene.background})` }"
-        >
+      <section class="scene-card" :style="{ backgroundImage: `url(${sceneCardBackground})` }">
+        <div class="scene">
           <img :src="currentScene.character" :alt="currentScene.alt" class="hero" />
         </div>
         <div class="mission-actions">
@@ -38,7 +35,8 @@
             :disabled="actionLoading"
             @click="startConquest"
           >
-            점령 시작
+            <img :src="buttonIcons.start" alt="시작 캐릭터" />
+            <span>점령 시작</span>
           </button>
           <button
             v-else-if="showFinishButton"
@@ -46,7 +44,8 @@
             :disabled="actionLoading"
             @click="finishConquest"
           >
-            점령 종료
+            <img :src="buttonIcons.finish" alt="점령 중 캐릭터" />
+            <span>점령 종료</span>
           </button>
           <button
             v-else-if="showRetryButton"
@@ -54,7 +53,8 @@
             :disabled="actionLoading"
             @click="resetConquest"
           >
-            다시 도전
+            <img :src="buttonIcons.retry" alt="재도전 캐릭터" />
+            <span>다시 도전</span>
           </button>
         </div>
       </section>
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useGeolocation } from "@vueuse/core";
 import ConquerApi from "@/api/ConquerApi.js";
 
@@ -82,25 +82,28 @@ const conquestState = ref("idle");
 const isGeoSupported = typeof window !== "undefined" && "geolocation" in navigator;
 
 const sceneAsset = (filename) => `${import.meta.env.BASE_URL ?? "/"}images/${filename}`;
+const pageBackground = sceneAsset("background.png");
+const sceneCardBackground = sceneAsset("scene_card_background.png");
+const buttonIcons = {
+  start: sceneAsset("1_standing.png"),
+  finish: sceneAsset("2_gif.gif"),
+  retry: sceneAsset("3_failed.png")
+};
 
 const SCENE_VARIANTS = {
   idle: {
-    background: sceneAsset("1.png"),
     character: sceneAsset("1_standing.png"),
     alt: "준비 중인 캐릭터"
   },
   running: {
-    background: sceneAsset("2.png"),
     character: sceneAsset("2_gif.gif"),
     alt: "점령 중인 캐릭터"
   },
   failure: {
-    background: sceneAsset("3.png"),
     character: sceneAsset("3_failed.png"),
     alt: "점령 실패 캐릭터"
   },
   success: {
-    background: sceneAsset("4.png"),
     character: sceneAsset("4_success.png"),
     alt: "점령 성공 캐릭터"
   }
@@ -229,11 +232,16 @@ const resetConquest = () => {
   setConquestState("idle");
 };
 
+onMounted(() => {
+  resetConquest();
+});
+
 const startConquest = async () => {
   if (actionLoading.value) return;
   actionLoading.value = true;
   try {
     const coordsPayload = await waitForCoords();
+    console.log("점령 시작 위치:", coordsPayload.latitude, coordsPayload.longitude);
     const data = await ConquerApi.start({
       latitude: coordsPayload.latitude,
       longitude: coordsPayload.longitude
@@ -294,7 +302,10 @@ const finishConquest = async () => {
   width: 100%;
   min-height: 100%;
   padding: 36px 40px;
-  background: #eceff6;
+  background-color: #eceff6;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -408,7 +419,10 @@ const finishConquest = async () => {
   border-radius: 26px;
   overflow: hidden;
   min-height: 330px;
-  background: #f6f9ff;
+  background-color: #f6f9ff;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   box-shadow: inset 0 6px 18px rgba(255, 255, 255, 0.25);
 }
 
@@ -416,14 +430,13 @@ const finishConquest = async () => {
   width: 100%;
   height: 100%;
   position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  padding-bottom: 120px;
+  box-sizing: border-box;
 }
 
 .hero {
   position: absolute;
-  bottom: 24px;
+  bottom: 130px;
   left: 50%;
   width: min(300px, 60%);
   transform: translateX(-50%);
@@ -432,22 +445,38 @@ const finishConquest = async () => {
 }
 
 .mission-actions {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
   display: flex;
-  padding: 20px 24px 24px;
+  justify-content: center;
 }
 
 .start-btn,
 .finish-btn,
 .retry-btn {
   width: 100%;
-  padding: 16px 20px;
+  padding: 18px 22px;
   border: none;
   border-radius: 18px;
   font-size: 18px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.start-btn img,
+.finish-btn img,
+.retry-btn img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
 .start-btn {

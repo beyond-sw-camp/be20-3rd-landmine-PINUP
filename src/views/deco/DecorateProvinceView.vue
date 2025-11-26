@@ -3,7 +3,7 @@
     <aside class="items-panel">
       <div class="items-header">
         <h2>내 아이템</h2>
-        <p>{{ activeProvince.name }}에서 획득한 소장품</p>
+        <p>{{ activeProvince.name }}에서 획득한 아이템</p>
         <p v-if="errorMessage" class="status-text error">{{ errorMessage }}</p>
         <p v-else-if="statusMessage" class="status-text" :class="statusType">{{ statusMessage }}</p>
       </div>

@@ -60,7 +60,7 @@ const routes = [
             { path: 'home', component: HomeView },
             { path: 'mypage', component: MyPageView },
             { path: 'decorate', component: DecorateHomeView },
-            { path: 'decorate/:provinceId', component: DecorateProvinceView, props: true },
+            { path: 'decorate/:provinceId', component: DecorateProvinceView, props: true, meta: { hideSidebar: true } },
             { path: 'conquer', component: ConquerView },
             { path: 'users/:userId', component: UserProfileView, props: true },
             { path: 'notices', component: NoticeListView },
