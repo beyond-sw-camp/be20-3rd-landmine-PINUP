@@ -7,31 +7,39 @@
       </div>
     </div>
 
-    <div ref="mapContainer" class="decorate-map"></div>
+    <div class="map-container">
+      <div ref="mapContainer" class="decorate-map"></div>
 
-    <transition name="fade">
-      <button
-          v-if="hoveredProvince"
-          class="decorate-btn"
-          :style="{ top: buttonPosition.top, left: buttonPosition.left }"
-          @click="goDetail"
-      >
-        {{ hoveredProvince.name }} 꾸미기
-      </button>
-    </transition>
+      <div class="province-buttons">
+        <button
+            v-for="feature in provinceButtons"
+            :key="feature.id"
+            class="decorate-btn"
+            :style="getButtonStyle(feature.position, mapVersion)"
+            @click="goDetail(feature.id)"
+        >
+          {{ feature.name }} 꾸미기
+        </button>
+      </div>
+
+      <div class="zoom-controls">
+        <button @click="zoomIn">+</button>
+        <button @click="zoomOut">-</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { koreaGeoJson } from "@/data/provinces.js";
 
 const mapContainer = ref(null);
-const hoveredProvince = ref(null);
-const buttonPosition = reactive({ top: "0px", left: "0px" });
+const provinceButtons = ref([]);
+const mapVersion = ref(0);
 const router = useRouter();
 
 let map;
@@ -44,28 +52,37 @@ const baseStyle = {
   fillOpacity: 0.9
 };
 
-const highlightStyle = {
-  color: "#1a8cff",
-  weight: 3,
-  fillColor: "#e7f1ff",
-  fillOpacity: 0.95
-};
-
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 const setButtonPosition = (latlng) => {
-  if (!map) return;
+  if (!map) return { top: "0px", left: "0px" };
   const point = map.latLngToContainerPoint(latlng);
   const container = map.getSize();
   const x = clamp(point.x, 80, container.x - 80);
   const y = clamp(point.y, 40, container.y - 40);
-  buttonPosition.left = `${x - 60}px`;
-  buttonPosition.top = `${y - 20}px`;
+  return { top: `${y - 20}px`, left: `${x - 60}px` };
 };
 
-const goDetail = () => {
-  if (!hoveredProvince.value) return;
-  router.push(`/decorate/${hoveredProvince.value.id}`);
+const getButtonStyle = (latlng, version) => {
+  void version; // ensures reactivity on map move/zoom
+  return setButtonPosition(latlng);
+};
+
+const goDetail = (provinceId) => {
+  if (!provinceId) return;
+  router.push(`/decorate/${provinceId}`);
+};
+
+const zoomIn = () => {
+  if (map) {
+    map.zoomIn();
+  }
+};
+
+const zoomOut = () => {
+  if (map) {
+    map.zoomOut();
+  }
 };
 
 onMounted(() => {
@@ -73,7 +90,7 @@ onMounted(() => {
 
   map = L.map(mapContainer.value, {
     zoomControl: false,
-    scrollWheelZoom: false,
+    scrollWheelZoom: true,
     doubleClickZoom: false,
     dragging: true,
     attributionControl: false
@@ -87,21 +104,18 @@ onMounted(() => {
   const bounds = L.latLngBounds([33.0, 124.5], [39.5, 130.5]);
   map.setMaxBounds(bounds);
   map.on("drag", () => map.panInsideBounds(bounds, { animate: false }));
-
-  const resetHighlight = (e) => {
-    geoLayer.resetStyle(e.target);
-    hoveredProvince.value = null;
+  const bumpVersion = () => {
+    mapVersion.value += 1;
   };
+  map.on("move", bumpVersion);
+  map.on("zoom", bumpVersion);
 
   const onEachFeature = (feature, layer) => {
-    layer.on({
-      mouseover: (e) => {
-        e.target.setStyle(highlightStyle);
-        hoveredProvince.value = feature.properties;
-        setButtonPosition(e.target.getBounds().getCenter());
-        e.target.bringToFront();
-      },
-      mouseout: resetHighlight
+    const center = layer.getBounds().getCenter();
+    provinceButtons.value.push({
+      id: feature.properties?.id,
+      name: feature.properties?.name,
+      position: center
     });
   };
 
@@ -143,6 +157,12 @@ onUnmounted(() => {
   font-size: 14px;
 }
 
+.map-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+}
+
 .decorate-map {
   flex: 1;
   width: 100%;
@@ -150,6 +170,38 @@ onUnmounted(() => {
   overflow: hidden;
   box-shadow: 0 20px 45px rgba(16, 56, 129, 0.1);
   min-height: 540px;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zoom-controls button {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 42px;
+  height: 42px;
+  font-size: 24px;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(18, 33, 83, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.zoom-controls button:hover {
+  transform: translateY(-2px);
+}
+
+.province-buttons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .decorate-btn {
@@ -164,6 +216,7 @@ onUnmounted(() => {
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(26, 140, 255, 0.3);
   transition: transform 0.2s ease;
+  pointer-events: auto;
 }
 
 .decorate-btn:hover {
