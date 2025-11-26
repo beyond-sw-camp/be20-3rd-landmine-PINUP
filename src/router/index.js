@@ -99,40 +99,39 @@ const router = createRouter({
     routes,
 })
 
-// 전역 라우터 가드
-router.beforeEach(async (to, from, next) => {
-    const userStore = useUserDataStore()
+import axiosInstance from "@/api/axios.js";
 
-    // 1) 인증 필요 없는 라우트면 통과
-    if (!to.meta.requiresAuth) {
-        return next()
-    }
-
-    // 2) 이미 Pinia에 유저 있으면 통과
-    if (userStore.user?.id) {
-        return next()
-    }
-
-    // 3) 없으면 서버 기준으로 한 번 확인
-    let ok = false
+async function checkSession() {
     try {
-        ok = await userStore.ensureLoggedIn()
+        const res = await axiosInstance.get("/api/user/me");
+        return res.data?.authenticated === true;
     } catch (e) {
-        console.error('router ensureLoggedIn 에러:', e)
-        ok = false
+        return false;
+    }
+}
+
+router.beforeEach(async (to, from, next) => {
+
+    // 루트 기본 접근 처리 > 로그인 상태에 따라 페이지 분기
+    if (to.path === "/") {
+        const isLogin = await checkSession();
+        return isLogin ? next("/home") : next("/login");
     }
 
-    // 4) 그래도 로그인 안 되어 있으면 로그인 페이지로
-    if (!ok || !userStore.user?.id) {
-        return next({
-            path: '/login',
-            query: { redirect: to.fullPath },
-        })
+    // 관리자 페이지는 세션 체크하지 않고 통과
+    if (to.path.startsWith("/admin")) {
+        return next();
     }
 
-    // 5) 최종 통과
-    next()
-})
+    // 로그인 페이지는 무조건 허용
+    if (to.path === "/login") {
+        return next();
+    }
+
+    // 세션 없는 상태면 로그인 페이지로
+    const userValid = await checkSession();
+    return userValid ? next() : next("/login");
+});
 
 export default router
 
