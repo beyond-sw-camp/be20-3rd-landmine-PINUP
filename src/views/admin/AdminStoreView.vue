@@ -14,6 +14,7 @@
           <tr>
             <th>번호</th>
             <th>아이템명</th>
+            <th>카테고리</th>
             <th>가격</th>
             <th>등록일</th>
             <th>판매 정책</th>
@@ -26,9 +27,24 @@
           <tr v-for="(item, idx) in items" :key="item.itemId">
             <td>{{ idx + 1 + page * size }}</td>
             <td>{{ item.name }}</td>
+            <td>
+              <span class="category-badge" :class="getCategoryMeta(item.category).className">
+                {{ getCategoryMeta(item.category).label }}
+              </span>
+            </td>
+
             <td>{{ item.price }} 포인트</td>
             <td>{{ formatDate(item.createdAt) }}</td>
-            <td>{{ item.limited }}</td>
+            <td>
+              <span
+                  v-if="item.limitType === 'LIMITED' || item.limitType === 'EVENT'"
+                  class="limit-badge"
+                  :class="item.limitType === 'LIMITED' ? 'limit' : 'event'"
+              >
+                {{ item.limitType === 'LIMITED' ? 'LIMIT' : 'EVENT' }}
+              </span>
+              <span v-else>일반</span>
+            </td>
             <td>
               <span class="status" :class="item.isActive ? 'active' : 'disabled'">
                 {{ item.isActive ? '판매중' : '중지됨' }}
@@ -86,6 +102,17 @@ const showForm = ref(false);
 const selectedItem = ref(null);
 
 const formatDate = (d) => new Date(d).toISOString().slice(0, 10);
+
+const CATEGORY_META = {
+  MARKER: { label: "마커", className: "marker" },
+  SPECIALTY: { label: "특산품", className: "specialty" },
+  BUILDING: { label: "건물", className: "building" },
+  TILE: { label: "타일", className: "tile" }
+};
+
+function getCategoryMeta(category) {
+  return CATEGORY_META[category] || { label: category || "기타", className: "default" };
+}
 
 async function reload() {
   const res = await AdminStoreApi.getItems(page.value, size.value);
@@ -179,6 +206,24 @@ td {
   color: #ff5e5e;
   font-weight: 700;
 }
+
+/* category badge */
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.category-badge.marker { background: #2563eb; }
+.category-badge.specialty { background: #059669; }
+.category-badge.building { background: #7c3aed; }
+.category-badge.tile { background: #f59e0b; }
+.category-badge.default { background: #6b7280; }
+.limit-badge.limit { background: #ef4444; }
+.limit-badge.event { background: #1f66ff; }
 
 /* buttons */
 .edit-btn, .delete-btn {

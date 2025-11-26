@@ -67,27 +67,19 @@ function closePopup() {
 const limitedItems = ref([]);
 const latestItems = ref([]);
 
-/* ⭐ NEW / LIMIT / EVENT 판단 */
-const ONE_DAY = 24 * 60 * 60 * 1000;
-const ONE_WEEK = ONE_DAY * 7;
-
+/* ⭐ LIMIT / EVENT 판단 */
 function addItemType(item) {
-  const now = Date.now();
-  const created = new Date(item.createdAt).getTime();
-
-  const isLimited = now - created <= ONE_WEEK;
-  const isNew = now - created <= 3 * ONE_DAY;
+  const mapped =
+      item.limitType === "LIMITED"
+          ? "LIMIT"
+          : item.limitType === "EVENT"
+              ? "EVENT"
+              : null;
 
   return {
     ...item,
-    itemType:
-        isLimited
-            ? "LIMIT"
-            : isNew
-                ? "NEW"
-                : item.isEvent
-                    ? "EVENT"
-                    : null
+    category: item.category || "MARKER",
+    itemType: mapped || (item.itemType === "LIMIT" || item.itemType === "EVENT" ? item.itemType : null)
   };
 }
 
@@ -109,10 +101,10 @@ onMounted(async () => {
   /* ⭐ 더미에도 itemType 적용 */
   if (!limitedItems.value.length) {
     limitedItems.value = [
-      { name: "아이템 이름", price: 1000, createdAt: new Date(), itemType: "LIMIT" },
-      { name: "아이템 이름", price: 2000, createdAt: new Date(), itemType: "LIMIT" },
-      { name: "아이템 이름", price: 3000, createdAt: new Date(), itemType: "LIMIT" },
-      { name: "아이템 이름", price: 4000, createdAt: new Date(), itemType: "LIMIT" }
+      { name: "아이템 이름", price: 1000, createdAt: new Date(), limitType: "LIMITED" },
+      { name: "아이템 이름", price: 2000, createdAt: new Date(), limitType: "LIMITED" },
+      { name: "아이템 이름", price: 3000, createdAt: new Date(), limitType: "LIMITED" },
+      { name: "아이템 이름", price: 4000, createdAt: new Date(), limitType: "LIMITED" }
     ].map(addItemType);
   }
 

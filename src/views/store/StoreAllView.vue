@@ -66,38 +66,30 @@ const totalPages = ref(3);
 const selectedCategory = ref("general");
 const items = ref([]);
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
-const ONE_WEEK = ONE_DAY * 7;
-
-/* ⭐ itemType 생성 함수 */
+/* ⭐ LIMIT / EVENT itemType 생성 */
 function addItemType(item) {
-  const now = Date.now();
-  const created = new Date(item.createdAt).getTime();
-
-  const isLimited = now - created <= ONE_WEEK;
-  const isNew = now - created <= 3 * ONE_DAY;
+  const mapped =
+      item.limitType === "LIMITED"
+          ? "LIMIT"
+          : item.limitType === "EVENT"
+              ? "EVENT"
+              : null;
 
   return {
     ...item,
-    itemType:
-        isLimited
-            ? "LIMIT"
-            : isNew
-                ? "NEW"
-                : item.isEvent
-                    ? "EVENT"
-                    : null
+    category: item.category || "MARKER",
+    itemType: mapped || (item.itemType === "LIMIT" || item.itemType === "EVENT" ? item.itemType : null)
   };
 }
 
 /* ⭐ 더미 데이터 */
 const dummyItems = [
-  { itemId: 1, name: "제주 감귤 바구니", price: 1500, createdAt: new Date(), isEvent: false },
-  { itemId: 2, name: "흑돼지 테고", price: 2000, createdAt: new Date(), isEvent: false },
-  { itemId: 3, name: "한라산 미니오브제", price: 1800, createdAt: new Date(), isEvent: false },
-  { itemId: 4, name: "제주 조랑말 피규어", price: 2400, createdAt: new Date(), isEvent: false },
-  { itemId: 5, name: "제주 파도 배경", price: 1200, createdAt: new Date(), isEvent: false },
-  { itemId: 6, name: "화산지형 엠블럼", price: 900, createdAt: new Date(), isEvent: false }
+  { itemId: 1, name: "제주 감귤 바구니", price: 1500, createdAt: new Date(), limitType: "LIMITED" },
+  { itemId: 2, name: "흑돼지 테고", price: 2000, createdAt: new Date(), limitType: "LIMITED" },
+  { itemId: 3, name: "한라산 미니오브제", price: 1800, createdAt: new Date(), limitType: "EVENT" },
+  { itemId: 4, name: "제주 조랑말 피규어", price: 2400, createdAt: new Date(), limitType: "NORMAL" },
+  { itemId: 5, name: "제주 파도 배경", price: 1200, createdAt: new Date(), limitType: "EVENT" },
+  { itemId: 6, name: "화산지형 엠블럼", price: 900, createdAt: new Date(), limitType: "NORMAL" }
 ];
 
 
