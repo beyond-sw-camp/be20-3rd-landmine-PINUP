@@ -211,6 +211,7 @@ const loadUser = async () => {
 
     if (res.data.authenticated) {
       user.value = {
+        id: res.data.id, // 추천에 필요해서 넣었는데, 혹시 다른 곳에 오류나면 삭제할 것.
         name: res.data.name,
         email: res.data.email,
         picture: res.data.picture
