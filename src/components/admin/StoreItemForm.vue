@@ -11,7 +11,7 @@
         <textarea v-model="form.description" required />
 
         <label>가격</label>
-        <input type="number" v-model="form.price" required />
+        <input type="number" v-model.number="form.price" min="0" required />
 
         <label>카테고리</label>
         <select v-model="form.category">
@@ -52,7 +52,7 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "saved"]);
 
-const form = reactive({
+const createDefaultForm = () => ({
   adminId: 1, // TODO: 로그인 관리자 ID로 교체
   regionId: null,
   name: "",
@@ -64,21 +64,48 @@ const form = reactive({
   createdAt: null
 });
 
+const form = reactive(createDefaultForm());
+
+function resetForm() {
+  Object.assign(form, createDefaultForm());
+}
+
+const buildPayload = () => ({
+  adminId: form.adminId,
+  regionId: form.regionId,
+  name: form.name,
+  description: form.description,
+  price: Number(form.price) || 0,
+  category: form.category,
+  limitType: form.limitType,
+  imageUrl: form.imageUrl,
+});
 // 수정 모드 초기값 세팅
 watch(
     () => props.editItem,
     (v) => {
-      if (v) Object.assign(form, v);
+      if (v) {
+        Object.assign(form, {
+          ...createDefaultForm(),
+          ...v
+        });
+      } else {
+        resetForm();
+      }
     },
     { immediate: true }
 );
 
 async function saveItem() {
+  const payload = buildPayload();
+
   if (props.editItem) {
-    await AdminStoreApi.updateItem(props.editItem.itemId, form);
+    await AdminStoreApi.updateItem(props.editItem.itemId, payload);
   } else {
-    await AdminStoreApi.createItem(form);
+    await AdminStoreApi.createItem(payload);
   }
+
+  resetForm();
   emit("saved");
   emit("close");
 }
