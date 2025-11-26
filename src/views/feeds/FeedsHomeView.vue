@@ -1,20 +1,32 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, computed, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import api from "@/api/axios";
 import { useUserDataStore } from "@/stores/userDataStore";
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserDataStore();
 
+/* -----------------------------------
+   상태
+----------------------------------- */
 const feeds = ref([]);
 const isLoading = ref(false);
 const isEnd = ref(false);
-
 const cursor = ref(null);
-const ROWS = 4; // 한 번에 가져올 개수
 
-// 피드 목록 로딩
+const ROWS = 4; // 한번에 가져올 개수
+
+/* -----------------------------------
+   authorId 필터 (마이페이지 → 전체 보기)
+   /feeds?authorId=3 형태면 3을 받아옴
+----------------------------------- */
+const authorId = computed(() => route.query.authorId ?? null);
+
+/* -----------------------------------
+   피드 목록 로딩
+----------------------------------- */
 const loadMore = async () => {
   if (isLoading.value || isEnd.value) return;
 
@@ -24,6 +36,7 @@ const loadMore = async () => {
       params: {
         rows: ROWS,
         cursor: cursor.value ?? undefined,
+        authorId: authorId.value ?? undefined, // ★ 추가된 필터
       },
     });
 
@@ -41,12 +54,12 @@ const loadMore = async () => {
     }
 
     const mapped = items.map((item) => ({
-      id: item.id,                                      // 피드 PK
-      title: item.title,                                // 제목
-      thumbnailUrl: item.thumbnailUrl || item.imageUrl, // 썸네일/이미지
-      userProfile: null,                                // 프로필 이미지는 아직 없음
-      userName: item.authorName,                        // 작성자 이름
-      likeCount: item.likeCount ?? 0,                   // 좋아요 수 기본값 0
+      id: item.id,
+      title: item.title,
+      thumbnailUrl: item.thumbnailUrl || item.imageUrl,
+      userProfile: null,
+      userName: item.authorName,
+      likeCount: item.likeCount ?? 0, // ★ BE 수정 후 정상 반영
     }));
 
     feeds.value.push(...mapped);
@@ -63,9 +76,11 @@ const loadMore = async () => {
   }
 };
 
+/* -----------------------------------
+   글쓰기
+----------------------------------- */
 const WRITE_PATH = "/feeds/write";
 
-// 글쓰기 버튼
 const goToWrite = async () => {
   const ok = await userStore.ensureLoggedIn();
 
@@ -80,7 +95,9 @@ const goToWrite = async () => {
   router.push(WRITE_PATH);
 };
 
-// ✅ 카드 클릭 → 로그인 확인 후 디테일 이동
+/* -----------------------------------
+   카드 → 디테일 이동
+----------------------------------- */
 const goToDetail = async (feedId) => {
   if (!feedId) return;
 
@@ -100,18 +117,32 @@ const goToDetail = async (feedId) => {
   });
 };
 
-// 첫 로드시 한 번 조회
+/* -----------------------------------
+   최초 로드
+----------------------------------- */
 onMounted(() => {
   loadMore();
 });
+
+/* -----------------------------------
+   authorId 바뀔 때 자동 초기화 후 재로딩
+   (마이페이지 → 전체보기 눌러서 진입할 때)
+----------------------------------- */
+watch(
+    () => authorId.value,
+    () => {
+      feeds.value = [];
+      cursor.value = null;
+      isEnd.value = false;
+      loadMore();
+    }
+);
 </script>
 
 <template>
   <div class="feed-page">
     <div class="feed-top-bar">
-      <div class="feed-top-left">
-        피드
-      </div>
+      <div class="feed-top-left">피드</div>
 
       <el-button type="primary" @click="goToWrite">
         피드 등록하기
@@ -119,10 +150,7 @@ onMounted(() => {
     </div>
 
     <!-- 처음 로딩 스켈레톤 -->
-    <div
-        v-if="isLoading && feeds.length === 0"
-        class="feed-grid"
-    >
+    <div v-if="isLoading && feeds.length === 0" class="feed-grid">
       <el-skeleton
           v-for="n in 4"
           :key="n"
@@ -167,9 +195,7 @@ onMounted(() => {
         </div>
 
         <div class="feed-card__body">
-          <div class="feed-card__title">
-            {{ feed.title }}
-          </div>
+          <div class="feed-card__title">{{ feed.title }}</div>
 
           <div class="feed-card__footer">
             <div class="feed-card__user">
@@ -192,14 +218,11 @@ onMounted(() => {
     </div>
 
     <!-- 완전 비어 있을 때 -->
-    <div
-        v-if="!isLoading && feeds.length === 0"
-        class="feed-empty"
-    >
+    <div v-if="!isLoading && feeds.length === 0" class="feed-empty">
       작성된 피드가 없습니다
     </div>
 
-    <!-- 추가 로딩 / 끝 표시 -->
+    <!-- 추가 로딩 / 끝 -->
     <div v-else>
       <div v-if="isLoading && feeds.length > 0" class="feed-loading">
         Loading...
@@ -213,7 +236,6 @@ onMounted(() => {
 </template>
 
 <style src="@/assets/styles/feeds.css" />
-
 <style scoped>
 .feed-card {
   cursor: pointer;
