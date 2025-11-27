@@ -35,3 +35,17 @@ export async function updateReportStatus({ reportId, reportStatus, adminStatemen
     const res = await api.patch(`http://localhost:8080/report`, { reportId, reportStatus, adminStatement });
     return res.data;
 }
+
+/**
+ * 피드를 신고합니다.
+ * POST /report
+ * @param {object} reportData - 신고 데이터
+ * @param {number} reportData.userId - 신고하는 사용자 ID
+ * @param {number} reportData.feedId - 신고할 피드 ID
+ * @param {string} reportData.reason - 신고 사유
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export async function submitReport(reportData) {
+  const res = await api.post('http://localhost:8080/report', reportData);
+  return res.data;
+}
