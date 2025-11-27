@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElInput } from 'element-plus'
 import api from '@/api/axios'
 import { useBack } from '@/composables/useBack'
 import { useUserDataStore } from '@/stores/userDataStore.js'
+import { submitReport } from '@/api/report.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +19,7 @@ const error = ref('')
 
 const deleteDialogVisible = ref(false)
 const reportDialogVisible = ref(false)
+const reportReason = ref('')
 const hasLiked = ref(false)
 
 // 라우트 파라미터
@@ -170,16 +172,38 @@ const confirmDelete = async () => {
   }
 }
 
-// 신고 (stub)
+// 신고 창 열기
 const handleReport = () => {
   if (!feed.value) return
   reportDialogVisible.value = true
 }
 
+// 신고 제출
 const confirmReport = async () => {
-  // TODO: 실제 신고 API 연동
+  if (!reportReason.value.trim()) {
+    ElMessage.warning('신고 사유를 입력해주세요.')
+    return
+  }
+
+  try {
+    const reportData = {
+      userId: currentUserId.value,
+      feedId: feedId.value,
+      reason: reportReason.value,
+    }
+    await submitReport(reportData)
+    ElMessage.success('피드가 정상적으로 신고되었습니다.')
+    closeReportDialog()
+  } catch (error) {
+    console.error('신고 처리 실패:', error)
+    ElMessage.error('신고 처리 중 오류가 발생했습니다.')
+  }
+}
+
+// 신고 창 닫기 (및 초기화)
+const closeReportDialog = () => {
   reportDialogVisible.value = false
-  ElMessage.success('신고가 접수된 것으로 처리되었습니다. (TODO)')
+  reportReason.value = ''
 }
 
 // 닉네임 클릭시 상대 프로필 조회로 이동
@@ -300,16 +324,27 @@ onMounted(async () => {
         </template>
       </el-dialog>
 
-      <!-- 신고 모달 (stub) -->
+      <!-- 신고 모달 -->
       <el-dialog
           v-model="reportDialogVisible"
           title="피드 신고"
           width="380px"
+          @closed="closeReportDialog"
       >
-        <p>스크립트 작성 필요</p>
+        <div class="report-dialog-content">
+          <p>이 피드를 신고하는 이유를 작성해주세요.</p>
+          <el-input
+              v-model="reportReason"
+              type="textarea"
+              :rows="4"
+              placeholder="예: 부적절한 콘텐츠, 스팸, 명예훼손 등"
+              maxlength="200"
+              show-word-limit
+          />
+        </div>
         <template #footer>
-          <el-button @click="reportDialogVisible = false">닫기</el-button>
-          <el-button type="primary" @click="confirmReport">신고</el-button>
+          <el-button @click="closeReportDialog">취소</el-button>
+          <el-button type="primary" @click="confirmReport">신고하기</el-button>
         </template>
       </el-dialog>
     </div>
@@ -319,6 +354,11 @@ onMounted(async () => {
 <style src="@/assets/styles/feeds.css" />
 
 <style scoped>
-
+.report-dialog-content p {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #606266;
+}
 </style>
 

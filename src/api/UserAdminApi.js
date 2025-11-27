@@ -12,6 +12,16 @@ export async function fetchUsers({ page = 1, size = 20, keyword = '' } = {}) {
 }
 
 /**
+ * 특정 사용자의 상세 정보를 조회합니다.
+ * GET /api/user/{id}
+ * @param {number} userId - 조회할 사용자 ID
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export const getUserById = (userId) => {
+  return api.get(`/api/admin/user/${userId}`);
+};
+
+/**
  * 회원 정지
  * POST /api/admin/users/{id}/suspend
  */
