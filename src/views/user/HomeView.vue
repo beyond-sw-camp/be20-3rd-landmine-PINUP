@@ -175,19 +175,16 @@
 <script setup>
 import MyPageView from "@/views/user/MyPageView.vue";
 import L from "leaflet";
+import 'leaflet/dist/leaflet.css';
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import {nextTick, onMounted, ref} from "vue";
 import { useRouter } from 'vue-router'
+
+const conqueredRegionIds = ref([]);
 
 const formatDate = (d) => {
   return new Date(d).toLocaleDateString();
 };
-
-// 가짜 사용자 데이터 — 로그인 후 백엔드에서 받아온다고 가정
-// const user = ref({
-//   name: "사용자",
-//   picture: "/images/default-profile.png"
-// });
 
 const conquer = ref({
   total: 100,
@@ -229,10 +226,6 @@ const loadUser = async () => {
   }
 };
 
-onMounted(() => {
-  loadUser();
-});
-
 // 랭킹 가져오기
 const ranking = ref([])   // 랭킹 리스트 상태
 
@@ -249,19 +242,18 @@ const loadRanking = async () => {
     const month = now.getMonth() + 1;
 
     const { data } = await axios.get("http://localhost:8080/ranks/monthly", {
-      params: { year, month },
+      params: { year: year, month: month },
       withCredentials: true
     });
 
-    ranking.value = data.slice(0, 10);
+    ranking.value = data.map(item => ({
+      rank: item.rank,
+      userName: item.nickname ?? "익명",
+      completedCount: item.captureCount ?? 0
+    }));
 
   } catch (e) {
-    console.error("API 실패 → 임시 데이터 사용");
-    ranking.value = [
-      { rank: 1, userName: "테스트1", completedCount: 10 },
-      { rank: 2, userName: "테스트2", completedCount: 8 },
-      { rank: 3, userName: "테스트3", completedCount: 8 }
-    ];
+    console.error("❌ 랭킹 조회 실패", e);
   }
 };
 
@@ -273,8 +265,6 @@ const loadNotices = async () => {
     const res = await fetch("http://localhost:8080/api/notices/latest?limit=2", {
       credentials: "include"
     });
-    console.log("📌 공지 응답:", notices.value);
-
 
     if (!res.ok) throw new Error("공지사항 API 호출 실패");
 
@@ -285,10 +275,12 @@ const loadNotices = async () => {
   }
 };
 
+// 로그아웃
 const logout = () => {
   window.location.href = "http://localhost:8080/logout";
 };
 
+// 공지사항 클릭시 자세히보기로 이동
 const openNotice = (id) => {
   window.location.href = `/notices/${id}`;
 };
@@ -320,9 +312,79 @@ const requestRecommend = async () => {
 };
 
 
-onMounted(() => {
+// 지도
+let map = null;
+
+const initMap = async () => {
+  await nextTick();
+
+  if (map !== null) {
+    map.remove();
+  }
+
+  // 지도 생성
+  map = L.map("map", {
+    center: [36.5, 127.9],
+    zoom: 7,
+    zoomControl: true,
+  });
+
+  // 타일 레이어
+  L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+      {
+        attribution: "© OpenStreetMap, © CartoDB",
+        maxZoom: 18,
+        opacity: 0.9,
+      }
+  ).addTo(map);
+
+  try {
+    const geoData = await fetch(
+        "https://raw.githubusercontent.com/vuski/admdongkor/master/ver20250401/HangJeongDong_ver20250401.geojson"
+    ).then((res) => res.json());
+
+    L.geoJSON(geoData, {
+      style: {
+        color: "#e5e5e5",
+        weight: 1,
+        fillOpacity: 0.05,
+      },
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(feature.properties.adm_nm);
+      },
+    }).addTo(map);
+
+  } catch (err) {
+    console.error("❌ GeoJSON 로드 실패:", err);
+  }
+};
+
+// 정복 데이터 가져오기
+const loadConquerRegions = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/conquer/my-regions", {
+      withCredentials: true
+    });
+
+    // 예: [101, 203, 502]
+    conqueredRegionIds.value = res.data;
+
+    console.log("정복 지역:", conqueredRegionIds.value);
+
+  } catch (err) {
+    console.error("❌ 정복 지역 조회 실패:", err);
+  }
+};
+
+
+onMounted(async () => {
+  loadUser();
   loadRanking();
   loadNotices();
+
+  await loadConquerRegions();
+  initMap();
 });
 
 </script>
@@ -522,10 +584,18 @@ onMounted(() => {
 
 /* 지도 섹션 */
 .map-card {
-  background: #FFFFFF;
+  background: #fff;
   border-radius: 26px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   padding: 20px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+}
+
+#map {
+  width: 100%;
+  height: 520px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 15px;
 }
 
 /* ✅ 팝업 스타일 */

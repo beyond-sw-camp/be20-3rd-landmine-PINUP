@@ -1,10 +1,20 @@
 <template>
   <div class="item-card">
 
-    <!-- ⭐ LIMIT 뱃지 + 남은 기간 -->
-    <div v-if="item.itemType === 'LIMIT'" class="limit-row">
-      <span class="badge-limit">LIMIT</span>
-      <span class="limit-remaining">{{ remainingDaysText }}</span>
+    <!-- ⭐ LIMIT / EVENT 뱃지 -->
+    <div
+        v-if="item.itemType === 'LIMIT' || item.itemType === 'EVENT'"
+        class="badge-row"
+    >
+      <span class="badge" :class="item.itemType.toLowerCase()">{{ item.itemType }}</span>
+
+      <!-- LIMIT 만 남은 기간 표시 -->
+      <span v-if="item.itemType === 'LIMIT'" class="limit-remaining">{{ remainingDaysText }}</span>
+    </div>
+
+    <!-- ⭐ 카테고리 뱃지 -->
+    <div class="category-row">
+      <span class="badge" :class="categoryMeta.className">{{ categoryMeta.label }}</span>
     </div>
 
     <!-- 이미지 -->
@@ -55,6 +65,18 @@ function buy() {
 -------------------------------------------------- */
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
+const CATEGORY_META = {
+  MARKER: { label: "마커", className: "marker" },
+  SPECIALTY: { label: "특산품", className: "specialty" },
+  BUILDING: { label: "건물", className: "building" },
+  TILE: { label: "타일", className: "tile" }
+};
+
+const categoryMeta = computed(() => CATEGORY_META[props.item.category] || {
+  label: props.item.category || "기타",
+  className: "default"
+});
+
 const remainingDaysText = computed(() => {
   if (!props.item.createdAt) return "";
 
@@ -92,8 +114,8 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   transform: translateY(-4px);
 }
 
-/* ⭐ LIMIT 표시 영역 */
-.limit-row {
+/* ⭐ LIMIT / EVENT 표시 영역 */
+.badge-row {
   width: 100%;
   display: flex;
   align-items: center;
@@ -101,13 +123,11 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   margin-bottom: 8px;
 }
 
-.badge-limit {
-  background: #ef4444;
-  color: #fff;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 6px;
+.category-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 8px;
 }
 
 .limit-remaining {
@@ -115,6 +135,24 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   color: #ef4444;
   font-weight: 600;
 }
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge.limit { background: #ef4444; }
+.badge.event { background: #1f66ff; }
+
+.badge.marker { background: #2563eb; }
+.badge.specialty { background: #059669; }
+.badge.building { background: #7c3aed; }
+.badge.tile { background: #f59e0b; }
+.badge.default { background: #6b7280; }
 
 /* 이미지 */
 .item-image {

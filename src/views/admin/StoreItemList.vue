@@ -1,8 +1,11 @@
 <template>
   <div class="layout">
+    <!-- 왼쪽 사이드바 -->
     <AdminSidebar />
 
+    <!-- 오른쪽 메인 영역 -->
     <main class="main">
+      <!-- 상단 -->
       <div class="topbar">
         <h2>🛒 상점 아이템 목록</h2>
         <button class="register-btn" @click="openForm()">아이템 등록</button>
@@ -26,47 +29,44 @@
           <tr v-for="(item, idx) in items" :key="item.itemId">
             <td>{{ idx + 1 + page * size }}</td>
             <td>{{ item.name }}</td>
-            <td>{{ item.price }} P</td>
+            <td>{{ item.price }} 포인트</td>
             <td>{{ formatDate(item.createdAt) }}</td>
 
             <!-- 판매 정책 뱃지 ONLY -->
             <td>
-                <span
-                    v-if="item.limitType === 'LIMITED'"
-                    class="policy-badge limited"
-                >LIMIT</span>
-
-              <span
-                  v-else-if="item.limitType === 'EVENT'"
-                  class="policy-badge event"
-              >EVENT</span>
-
-              <span v-else>
-                  일반
-                </span>
+              <span v-if="item.limitType === 'LIMITED'" class="badge limit">LIMIT</span>
+              <span v-else-if="item.limitType === 'EVENT'" class="badge event">EVENT</span>
+              <span v-else>일반</span>
             </td>
 
-            <!-- 판매중 / 중지됨 토글 -->
+            <!-- 판매중/중지 토글 -->
             <td>
               <button
                   class="status-toggle"
                   :class="item.isActive ? 'active' : 'disabled'"
                   @click="toggleStatus(item)"
               >
-                {{ item.isActive ? "판매중" : "중지됨" }}
+                {{ item.isActive ? '판매중' : '중지됨' }}
               </button>
             </td>
 
-            <!-- 수정 / 삭제 -->
+            <!-- 수정/삭제 -->
             <td>
               <button class="edit-btn" @click="openForm(item)">수정</button>
               <button class="delete-btn" @click="deleteItem(item.itemId)">삭제</button>
             </td>
           </tr>
+
+          <!-- 목록 없음 -->
+          <tr v-if="items.length === 0">
+            <td colspan="7" class="empty-row">
+              등록된 아이템이 없습니다.
+            </td>
+          </tr>
           </tbody>
         </table>
 
-        <!-- Pagination -->
+        <!-- 페이지네이션 -->
         <div class="pagination" v-if="totalPages > 0">
           <button @click="changePage(page - 1)" :disabled="page === 0">←</button>
 
@@ -81,10 +81,9 @@
 
           <button @click="changePage(page + 1)" :disabled="page === totalPages - 1">→</button>
         </div>
-
       </section>
 
-      <!-- 등록 / 수정 모달 -->
+      <!-- 등록/수정 모달 -->
       <StoreItemForm
           v-if="showForm"
           :editItem="selectedItem"
@@ -98,25 +97,28 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import AdminSidebar from "@/components/AdminSidebar.vue";
-import { AdminStoreApi } from "@/api/AdminStoreApi.js";
 import StoreItemForm from "@/components/admin/StoreItemForm.vue";
+import { AdminStoreApi } from "@/api/AdminStoreApi.js";
 
+// 상태
 const items = ref([]);
 const page = ref(0);
 const size = ref(10);
 const totalPages = ref(0);
-
 const showForm = ref(false);
 const selectedItem = ref(null);
 
-const formatDate = (d) =>
-    d ? new Date(d).toISOString().slice(0, 10) : "-";
+// 날짜 포맷팅
+function formatDate(d) {
+  if (!d) return "-";
+  return d.toString().slice(0, 10);
+}
 
-// 목록 가져오기
+// 목록 로드
 async function reload() {
   const res = await AdminStoreApi.getItems(page.value, size.value);
   items.value = res.items || [];
-  totalPages.value = res.totalPages || 0;
+  totalPages.value = res.totalPages ?? 0;
 }
 
 // 페이지 이동
@@ -126,19 +128,19 @@ function changePage(p) {
   reload();
 }
 
-// 폼 열기
+// 모달 열기
 function openForm(item = null) {
   selectedItem.value = item;
   showForm.value = true;
 }
 
-// 폼 닫기
+// 모달 닫기
 function closeForm() {
-  showForm.value = false;
   selectedItem.value = null;
+  showForm.value = false;
 }
 
-// 🔥 판매 상태 토글
+// 🔥 판매 상태 토글 로직
 async function toggleStatus(item) {
   const prev = item.isActive;
   const next = !prev;
@@ -149,8 +151,9 @@ async function toggleStatus(item) {
   try {
     await AdminStoreApi.updateItem(item.itemId, { isActive: next });
   } catch (e) {
+    console.error("토글 실패:", e);
     alert("상태 변경 실패");
-    item.isActive = prev; // rollback
+    item.isActive = prev; // 롤백
   }
 }
 
@@ -164,7 +167,6 @@ async function deleteItem(id) {
 onMounted(reload);
 </script>
 
-
 <style scoped>
 .layout {
   display: flex;
@@ -175,30 +177,28 @@ onMounted(reload);
   padding: 32px;
 }
 
-/* topbar */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .register-btn {
   background: #3ac45d;
   color: white;
   padding: 10px 18px;
-  border-radius: 20px;
+  border-radius: 18px;
+  font-weight: bold;
   border: none;
   cursor: pointer;
-  font-weight: 600;
 }
 
-/* table box */
 .table-card {
-  background: #ffffff;
-  padding: 30px;
+  background: white;
+  padding: 28px;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 table {
@@ -217,63 +217,58 @@ td {
   text-align: center;
 }
 
-/* 판매 상태 토글 버튼 */
+.empty-row {
+  padding: 32px 0;
+  font-size: 14px;
+  color: #777;
+}
+
 .status-toggle {
   padding: 6px 12px;
-  border-radius: 16px;
+  border-radius: 20px;
   border: none;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .status-toggle.active {
   background: #e6ffef;
-  color: #1fa04a;
+  color: #10a344;
 }
 
 .status-toggle.disabled {
   background: #ffe6e6;
-  color: #d72727;
+  color: #e11d1d;
 }
 
 /* 판매 정책 뱃지 */
-.policy-badge {
-  padding: 6px 12px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
 }
 
-.policy-badge.limited {
-  background: #ef4444;
-}
-
-.policy-badge.event {
-  background: #2563eb;
-}
+.badge.limit { background: #ef4444; }
+.badge.event { background: #2563eb; }
 
 /* 관리 버튼 */
 .edit-btn,
 .delete-btn {
   padding: 6px 12px;
+  font-size: 12px;
+  color: white;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  border: none;
-  color: white;
-  font-size: 12px;
 }
 
-.edit-btn {
-  background: #3a8dff;
-}
+.edit-btn { background: #3b82f6; margin-right: 4px; }
+.delete-btn { background: #ef4444; }
 
-.delete-btn {
-  background: #ff4f4f;
-}
-
-/* pagination */
+/* 페이지네이션 */
 .pagination {
   margin-top: 16px;
   text-align: center;
@@ -286,6 +281,7 @@ td {
   border: none;
   background: #e8e6ff;
   cursor: pointer;
+  font-size: 12px;
 }
 
 .pagination .active {
