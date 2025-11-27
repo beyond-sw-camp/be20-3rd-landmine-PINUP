@@ -1,4 +1,4 @@
-# 🌍 PIN-UP 프로젝트 개요
+![list-successimg](https://github.com/user-attachments/assets/5087ee8a-1b6a-4cef-ab97-4d034882a2d2)# 🌍 PIN-UP 프로젝트 개요
 
 여행을 기록하고, 영토를 넓히며, 전국을 점령하라!  
 **PIN-UP(Pin-Up)**은 국내 여행 경험을 *데이터와 시각화로 즐기는* 새로운 형태의 여행 기록 서비스입니다.
@@ -241,3 +241,22 @@ PIN-UP은 사용자가 실제 방문한 지역을
 
 </details>
 
+<details>
+  <summary>피드</summary>
+
+- 피드 작성<br>
+  ![write-successimg](https://github.com/user-attachments/assets/b23f69fd-3147-4d63-9bbc-be80e45423a9)
+ 
+- 피드 조회<br>
+ ![list-successimg](https://github.com/user-attachments/assets/80494e33-ce71-44c3-8d24-5b1aac7b093a)
+
+- 피드 수정<br>
+  ![edit-successimg](https://github.com/user-attachments/assets/65a05779-9255-428d-90a3-f1442fc595a3)
+
+- 피드 삭제<br>
+  ![delete-successimg](https://github.com/user-attachments/assets/0f7ecc09-c784-4d09-8908-a7600dbef29b)
+
+- 피드좋아요<br>
+  ![feedlike-successimg](https://github.com/user-attachments/assets/0dbed72a-490d-47be-9772-8fff00eb7728)
+
+</details>
