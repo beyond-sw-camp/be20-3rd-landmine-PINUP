@@ -265,19 +265,16 @@ PIN-UP은 사용자가 실제 방문한 지역을
   <summary>상점</summary>
 
 - 아이템 등록<br>
-<img width="800" height="430" alt="image" src="https://github.com/user-attachments/assets/0bfaa1fc-9d54-4993-adbc-cf21411e0731" />
-
+![ezgif-1f2d9e2ff2f7290f](https://github.com/user-attachments/assets/fc9db298-dec8-41f0-834f-c810243d8f5a)
 
 - 아이템 수정<br>
-
+![아이템 수정](https://github.com/user-attachments/assets/f96fe94b-be6f-4d35-84f1-05230058689a)
 
 - 아이템 삭제<br>
+ ![아이템 삭제](https://github.com/user-attachments/assets/b5918312-0255-40e4-abc9-6e3803ede724)
  
-
-- 아이템 기간한정+최신 조회<br>
- 
-
-- 아이템 전체 조회<br>
+- 아이템 조회<br>
+![아이템 조회](https://github.com/user-attachments/assets/616facdb-00e8-4027-aa9e-90e686a86a7f)
 
 
 </details>
