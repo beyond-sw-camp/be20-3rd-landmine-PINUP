@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElInput } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import api from '@/api/axios'
 import { useBack } from '@/composables/useBack'
 import { useUserDataStore } from '@/stores/userDataStore.js'
@@ -12,15 +12,12 @@ const router = useRouter()
 const { back } = useBack({ name: 'feeds' })
 const userStore = useUserDataStore()
 
-const REPORT_API_URL = null // TODO : 실제 API 주소 필요
-
 const feed = ref(null)
 const loading = ref(true)
 const error = ref('')
 
 const deleteDialogVisible = ref(false)
 const reportDialogVisible = ref(false)
-const reportReason = ref('')
 const hasLiked = ref(false)
 
 const reportContent = ref('')
@@ -185,8 +182,8 @@ const confirmReport = async () => {
     return
   }
 
-  const content = reportContent.value.trim()
-  if (!content) {
+  const reason = reportContent.value.trim()
+  if (!reason) {
     ElMessage.warning('신고 내용을 입력해 주세요.')
     return
   }
@@ -195,19 +192,13 @@ const confirmReport = async () => {
   isReporting.value = true
 
   try {
-    const payload = {
-      authorId: feed.value.authorId,      // 피드 작성자
+    const reportData = {
       userId: currentUserId.value,       // 신고자
       feedId: feed.value.id,             // 피드 PK
-      content,                           // 신고 내용
+      reason,                           // 신고 내용
     }
 
-    if(REPORT_API_URL == null){
-      ElMessage.error('REPORT_API_URL 입력 필요')
-      return
-    }
-
-    await api.post(REPORT_API_URL, payload)
+    await submitReport(reportData)
 
     ElMessage.success('신고가 접수되었습니다.')
     reportDialogVisible.value = false
