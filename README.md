@@ -279,3 +279,23 @@ PIN-UP은 사용자가 실제 방문한 지역을
 
 </details>
 
+<details>
+  <summary>신고 처리</summary>
+
+  - 신고 처리<br>
+  ![신고 처리](https://github.com/user-attachments/assets/f8072048-7432-488a-90a5-087ae14b9891)
+</details>
+
+<details>
+  <summary>공지사항</summary>
+
+  - 공지사항<br>
+  ![공지사항](https://github.com/user-attachments/assets/9d811aa8-2ded-4f9a-96c2-c9cb33a38cb1)
+</details>
+
+<details>
+  <summary>사용자 알림</summary>
+
+  - 사용자 알림<br>
+  ![알림](https://github.com/user-attachments/assets/4740e163-f1f8-4cf0-8a73-c3610b872587)
+</details>
