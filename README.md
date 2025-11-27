@@ -1,4 +1,4 @@
-![list-successimg](https://github.com/user-attachments/assets/5087ee8a-1b6a-4cef-ab97-4d034882a2d2)# 🌍 PIN-UP 프로젝트 개요
+# 🌍 PIN-UP 프로젝트 개요
 
 여행을 기록하고, 영토를 넓히며, 전국을 점령하라!  
 **PIN-UP(Pin-Up)**은 국내 여행 경험을 *데이터와 시각화로 즐기는* 새로운 형태의 여행 기록 서비스입니다.
