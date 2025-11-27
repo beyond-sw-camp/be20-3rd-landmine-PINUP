@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <Sidebar />
+    <Sidebar v-if="showSidebar" />
     <main class="main">
       <router-view />
     </main>
@@ -9,8 +9,12 @@
 
 <script setup>
 import Sidebar from "@/components/Sidebar.vue";
-import { onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 import sseService from '@/api/sseService.js';
+
+const route = useRoute();
+const showSidebar = computed(() => route.meta?.hideSidebar !== true);
 
 // 컴포넌트가 마운트되면 SSE 연결 시작
 onMounted(() => {
