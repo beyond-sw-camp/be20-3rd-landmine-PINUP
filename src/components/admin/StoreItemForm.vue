@@ -23,9 +23,9 @@
 
         <label>판매 정책</label>
         <select v-model="form.limitType">
-          <option>NORMAL</option>
-          <option>LIMITED</option>
-          <option>EVENT</option>
+          <option value="NORMAL">NORMAL</option>
+          <option value="LIMITED">LIMITED</option>
+          <option value="EVENT">EVENT</option>
         </select>
 
         <label>이미지 URL</label>
