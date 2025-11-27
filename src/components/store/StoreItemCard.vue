@@ -3,13 +3,18 @@
 
     <!-- ⭐ LIMIT / EVENT 뱃지 -->
     <div
-        v-if="item.itemType === 'LIMIT' || item.itemType === 'EVENT'"
+        v-if="item.limitType === 'LIMITED' || item.limitType === 'EVENT'"
         class="badge-row"
     >
-      <span class="badge" :class="item.itemType.toLowerCase()">{{ item.itemType }}</span>
+      <span class="badge"
+            :class="limitClass">
+        {{ limitLabel }}
+      </span>
 
-      <!-- LIMIT 만 남은 기간 표시 -->
-      <span v-if="item.itemType === 'LIMIT'" class="limit-remaining">{{ remainingDaysText }}</span>
+      <!-- LIMITED 일 때 남은 기간 -->
+      <span v-if="item.limitType === 'LIMITED'" class="limit-remaining">
+        {{ remainingDaysText }}
+      </span>
     </div>
 
     <!-- ⭐ 카테고리 뱃지 -->
@@ -17,35 +22,24 @@
       <span class="badge" :class="categoryMeta.className">{{ categoryMeta.label }}</span>
     </div>
 
-    <!-- 이미지 -->
     <div class="item-image">
-      <img
-          v-if="item.imageUrl"
-          :src="item.imageUrl"
-          alt="item image"
-      />
+      <img v-if="item.imageUrl" :src="item.imageUrl" />
       <div v-else class="no-image">No Image</div>
     </div>
 
-    <!-- 정보 -->
     <div class="item-info">
       <div class="item-name">{{ item.name }}</div>
       <div class="item-price">{{ item.price }} P</div>
     </div>
 
-    <!-- 구매 버튼 -->
-    <button
-        class="buy-btn"
-        :disabled="isExpired"
-        @click="buy"
-    >
+    <button class="buy-btn" :disabled="isExpired" @click="buy">
       {{ isExpired ? '기간 종료' : '구매하기' }}
     </button>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from "vue";
+import { computed, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   item: {
@@ -59,12 +53,21 @@ function buy() {
   if (!isExpired.value) emit("buy", props.item);
 }
 
-/* -------------------------------------------------
-   ⭐ 기간 계산
-   createdAt + 7일 = 만료일
--------------------------------------------------- */
-const ONE_DAY = 24 * 60 * 60 * 1000;
+/* ⭐ LIMIT / EVENT */
+const limitLabel = computed(() => {
+  return props.item.limitType === "LIMITED" ? "LIMIT" :
+      props.item.limitType === "EVENT" ? "EVENT" : "";
+});
 
+const limitClass = computed(() =>
+    props.item.limitType === "LIMITED"
+        ? "limited"
+        : props.item.limitType === "EVENT"
+            ? "event"
+            : ""
+);
+
+/* ⭐ 카테고리 */
 const CATEGORY_META = {
   MARKER: { label: "마커", className: "marker" },
   SPECIALTY: { label: "특산품", className: "specialty" },
@@ -72,33 +75,31 @@ const CATEGORY_META = {
   TILE: { label: "타일", className: "tile" }
 };
 
-const categoryMeta = computed(() => CATEGORY_META[props.item.category] || {
-  label: props.item.category || "기타",
-  className: "default"
-});
+const categoryMeta = computed(() =>
+    CATEGORY_META[props.item.category] ||
+    { label: props.item.category || "기타", className: "default" }
+);
+
+/* ⭐ LIMITED 7일 남은 날짜 계산 */
+const ONE_DAY = 24 * 60 * 60 * 1000;
 
 const remainingDaysText = computed(() => {
+  if (props.item.limitType !== "LIMITED") return "";
   if (!props.item.createdAt) return "";
 
   const created = new Date(props.item.createdAt).getTime();
-  const now = Date.now();
+  const diff = created + (7 * ONE_DAY) - Date.now();
 
-  const end = created + 7 * ONE_DAY;           // 만료 시각
-  const diff = end - now;
-
-  if (diff <= 0) return "종료됨";              // 만료됨
-
+  if (diff <= 0) return "종료됨";
   const days = Math.floor(diff / ONE_DAY);
-
-  if (days === 0) return "오늘 마감";           // 오늘이 마지막날
-
-  return `${days}일 남음`;
+  return days === 0 ? "오늘 마감" : `${days}일 남음`;
 });
 
 const isExpired = computed(() => remainingDaysText.value === "종료됨");
 </script>
 
 <style scoped>
+/* → 디자인 절대 수정 X, 네가 줬던 것 그대로 */
 .item-card {
   background: #ffffff;
   border-radius: 18px;
@@ -114,7 +115,6 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   transform: translateY(-4px);
 }
 
-/* ⭐ LIMIT / EVENT 표시 영역 */
 .badge-row {
   width: 100%;
   display: flex;
@@ -145,16 +145,17 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   color: #fff;
 }
 
-.badge.limit { background: #ef4444; }
-.badge.event { background: #1f66ff; }
+/* 판매 정책 */
+.limited { background: #ef4444; }
+.event { background: #1f66ff; }
 
-.badge.marker { background: #2563eb; }
-.badge.specialty { background: #059669; }
-.badge.building { background: #7c3aed; }
-.badge.tile { background: #f59e0b; }
-.badge.default { background: #6b7280; }
+/* 카테고리 */
+.marker { background: #2563eb; }
+.specialty { background: #059669; }
+.building { background: #7c3aed; }
+.tile { background: #f59e0b; }
+.default { background: #6b7280; }
 
-/* 이미지 */
 .item-image {
   width: 150px;
   height: 110px;
@@ -178,7 +179,6 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   font-size: 14px;
 }
 
-/* 정보 */
 .item-info {
   text-align: center;
   margin-bottom: 10px;
@@ -194,7 +194,6 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   color: #555;
 }
 
-/* 구매 버튼 */
 .buy-btn {
   width: 120px;
   background: #3b82f6;

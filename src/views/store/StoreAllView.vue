@@ -61,49 +61,24 @@ const router = useRouter();
 
 const page = ref(1);
 const pageSize = 6;
-const totalPages = ref(3);
+const totalPages = ref(1);
 
 const selectedCategory = ref("general");
 const allItems = ref([]);
 
-/* ⭐ LIMIT / EVENT itemType 생성 */
-function addItemType(item) {
-  const mapped =
-      item.limitType === "LIMITED"
-          ? "LIMIT"
-          : item.limitType === "EVENT"
-              ? "EVENT"
-              : null;
-
-  return {
-    ...item,
-    category: item.category || "MARKER",
-    limitType: item.limitType || "NORMAL",
-    itemType: mapped || (item.itemType === "LIMIT" || item.itemType === "EVENT" ? item.itemType : null)
-  };
-}
-
-/* ⭐ 더미 데이터 */
-const dummyItems = [
-  { itemId: 1, name: "제주 감귤 바구니", price: 1500, createdAt: new Date(), limitType: "LIMITED" },
-  { itemId: 2, name: "흑돼지 테고", price: 2000, createdAt: new Date(), limitType: "LIMITED" },
-  { itemId: 3, name: "한라산 미니오브제", price: 1800, createdAt: new Date(), limitType: "EVENT" },
-  { itemId: 4, name: "제주 조랑말 피규어", price: 2400, createdAt: new Date(), limitType: "NORMAL" },
-  { itemId: 5, name: "제주 파도 배경", price: 1200, createdAt: new Date(), limitType: "EVENT" },
-  { itemId: 6, name: "화산지형 엠블럼", price: 900, createdAt: new Date(), limitType: "NORMAL" }
-];
-
+/* ⭐ LIMIT / EVENT / NORMAL 필터링 */
 const filteredItems = computed(() => {
-  const list = allItems.value
-      .map(addItemType)
+  return allItems.value
       .filter(item => {
-        if (selectedCategory.value === "limited") return item.limitType === "LIMITED" || item.itemType === "LIMIT";
-        if (selectedCategory.value === "event") return item.limitType === "EVENT" || item.itemType === "EVENT";
-        return true;
-      })
-      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        if (selectedCategory.value === "limited")
+          return item.limitType === "LIMITED";
 
-  return list;
+        if (selectedCategory.value === "event")
+          return item.limitType === "EVENT";
+
+        return true; // 일반 (전체)
+      })
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
 /* 구매 팝업 */
@@ -111,26 +86,21 @@ const popupItem = ref(null);
 function openPopup(item) { popupItem.value = item; }
 function closePopup() { popupItem.value = null; }
 
-/* ⭐ 페이지 로딩 */
+/* 페이지 로딩 */
 async function loadPage(p) {
   page.value = p;
 
   try {
-    const data = await StoreApi.getPagedItems(p - 1, pageSize);
+    const data = await StoreApi.getPagedItems(page.value - 1, pageSize);
 
-    if (data && Array.isArray(data.items) && data.items.length > 0) {
+    if (data && Array.isArray(data.items)) {
       allItems.value = data.items;
-      totalPages.value = data.totalPages || 3;
+      totalPages.value = data.totalPages || 1;
       return;
     }
   } catch (err) {
     console.error("StoreAllView API 오류:", err);
   }
-
-  /* 백엔드 실패 시 더미 */
-  allItems.value = dummyItems;
-
-  totalPages.value = 3;
 }
 
 function prevPage() {
@@ -141,7 +111,6 @@ function nextPage() {
   if (page.value < totalPages.value) loadPage(page.value + 1);
 }
 
-/* 카테고리 변경 → 1페이지부터 */
 watch(selectedCategory, () => {
   loadPage(1);
 });
@@ -152,7 +121,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* ⭐ 기존 스타일 그대로 유지 */
+/* → 디자인 절대 수정 X (원본 그대로) */
 .store-all {
   padding: 40px 80px 40px 60px;
   min-height: 100%;
