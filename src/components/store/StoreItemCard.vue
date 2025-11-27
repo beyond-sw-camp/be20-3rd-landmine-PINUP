@@ -6,8 +6,7 @@
         v-if="item.limitType === 'LIMITED' || item.limitType === 'EVENT'"
         class="badge-row"
     >
-      <span class="badge"
-            :class="limitClass">
+      <span class="badge" :class="limitClass">
         {{ limitLabel }}
       </span>
 
@@ -23,8 +22,13 @@
     </div>
 
     <div class="item-image">
-      <img v-if="item.imageUrl" :src="item.imageUrl" />
-      <div v-else class="no-image">No Image</div>
+      <!-- ⭐ 정상 URL일 때만 이미지 표시 -->
+      <img v-if="hasValidImage" :src="item.imageUrl" />
+
+      <!-- ⭐ URL 없으면 이모지 -->
+      <div v-else class="emoji-wrapper">
+        <span class="emoji">{{ mappedEmoji }}</span>
+      </div>
     </div>
 
     <div class="item-info">
@@ -49,30 +53,32 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["buy"]);
+
 function buy() {
   if (!isExpired.value) emit("buy", props.item);
 }
 
-/* ⭐ LIMIT / EVENT */
+/* ------------------------------------
+   ⭐ 판매 정책 뱃지
+------------------------------------ */
 const limitLabel = computed(() => {
   return props.item.limitType === "LIMITED" ? "LIMIT" :
-      props.item.limitType === "EVENT" ? "EVENT" : "";
+      props.item.limitType === "EVENT"  ? "EVENT" : "";
 });
 
 const limitClass = computed(() =>
-    props.item.limitType === "LIMITED"
-        ? "limited"
-        : props.item.limitType === "EVENT"
-            ? "event"
-            : ""
+    props.item.limitType === "LIMITED" ? "limited" :
+        props.item.limitType === "EVENT"  ? "event"   : ""
 );
 
-/* ⭐ 카테고리 */
+/* ------------------------------------
+   ⭐ 카테고리 메타
+------------------------------------ */
 const CATEGORY_META = {
-  MARKER: { label: "마커", className: "marker" },
-  SPECIALTY: { label: "특산품", className: "specialty" },
-  BUILDING: { label: "건물", className: "building" },
-  TILE: { label: "타일", className: "tile" }
+  MARKER:     { label: "마커",   className: "marker" },
+  SPECIALTY:  { label: "특산품", className: "specialty" },
+  BUILDING:   { label: "건물",   className: "building" },
+  TILE:       { label: "타일",   className: "tile" }
 };
 
 const categoryMeta = computed(() =>
@@ -80,7 +86,36 @@ const categoryMeta = computed(() =>
     { label: props.item.category || "기타", className: "default" }
 );
 
-/* ⭐ LIMITED 7일 남은 날짜 계산 */
+/* ------------------------------------
+   ⭐ 이모지 매핑
+------------------------------------ */
+const EMOJI_MAP = {
+  "서울 신라호텔": "🏨",
+  "서울 롯데타워": "🗼",
+  "전라도 거북선": "🚢",
+  "제주 한라봉": "🍊",
+  "강원도 감자": "🥔",
+  "여수 포장마차": "🍢",
+  "제주 조랑말": "🐴",
+  // 기본
+};
+
+const mappedEmoji = computed(() => {
+  return EMOJI_MAP[props.item.name] || "🛒";
+});
+
+/* ------------------------------------
+   ⭐ URL 검증
+------------------------------------ */
+const hasValidImage = computed(() => {
+  const url = props.item.imageUrl;
+  if (!url) return false;
+  return url.startsWith("http://") || url.startsWith("https://");
+});
+
+/* ------------------------------------
+   ⭐ LIMITED 7일 남은 날짜
+------------------------------------ */
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 const remainingDaysText = computed(() => {
@@ -99,7 +134,7 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
 </script>
 
 <style scoped>
-/* → 디자인 절대 수정 X, 네가 줬던 것 그대로 */
+/* → 디자인 절대 수정 안 함 (너가 준 원본 그대로) */
 .item-card {
   background: #ffffff;
   border-radius: 18px;
@@ -111,9 +146,7 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   transition: 0.15s;
 }
 
-.item-card:hover {
-  transform: translateY(-4px);
-}
+.item-card:hover { transform: translateY(-4px); }
 
 .badge-row {
   width: 100%;
@@ -145,16 +178,14 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   color: #fff;
 }
 
-/* 판매 정책 */
 .limited { background: #ef4444; }
-.event { background: #1f66ff; }
+.event   { background: #1f66ff; }
 
-/* 카테고리 */
-.marker { background: #2563eb; }
-.specialty { background: #059669; }
-.building { background: #7c3aed; }
-.tile { background: #f59e0b; }
-.default { background: #6b7280; }
+.marker     { background: #2563eb; }
+.specialty  { background: #059669; }
+.building   { background: #7c3aed; }
+.tile       { background: #f59e0b; }
+.default    { background: #6b7280; }
 
 .item-image {
   width: 150px;
@@ -174,25 +205,12 @@ const isExpired = computed(() => remainingDaysText.value === "종료됨");
   border-radius: 12px;
 }
 
-.no-image {
-  color: #777;
-  font-size: 14px;
-}
+.emoji-wrapper { font-size: 48px; }
+.emoji { font-size: 48px; }
 
-.item-info {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.item-name {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.item-price {
-  font-size: 14px;
-  color: #555;
-}
+.item-info { text-align: center; margin-bottom: 10px; }
+.item-name { font-weight: 600; margin-bottom: 4px; }
+.item-price { font-size: 14px; color: #555; }
 
 .buy-btn {
   width: 120px;
