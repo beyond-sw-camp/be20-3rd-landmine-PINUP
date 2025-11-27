@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElInput } from 'element-plus'
 import api from '@/api/axios'
 import { useBack } from '@/composables/useBack'
 import { useUserDataStore } from '@/stores/userDataStore.js'
+import { submitReport } from '@/api/report.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +20,7 @@ const error = ref('')
 
 const deleteDialogVisible = ref(false)
 const reportDialogVisible = ref(false)
+const reportReason = ref('')
 const hasLiked = ref(false)
 
 const reportContent = ref('')
@@ -175,6 +177,7 @@ const handleReport = () => {
   reportDialogVisible.value = true
 }
 
+// 신고 제출
 const confirmReport = async () => {
   if (!feed.value) return
   if (!currentUserId.value) {
