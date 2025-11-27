@@ -85,16 +85,30 @@
         <div class="card feed-card">
           <div class="feed-header">
             <div class="feed-title">내 피드 모아보기</div>
-            <div class="feed-filter">전체 보기</div>
+            <div class="feed-filter" @click="goToAllMyFeeds">
+              전체 보기
+            </div>
           </div>
 
           <div class="feed-container">
-            <div class="feed-photo-grid">
+            <!-- 로딩 중 -->
+            <p v-if="isLoadingFeeds" class="feed-status">
+              내 피드를 불러오는 중입니다...
+            </p>
+
+            <!-- 피드 없음 -->
+            <p v-else-if="feeds.length === 0" class="feed-status">
+              작성한 피드가 없습니다.
+            </p>
+
+            <!-- 피드 썸네일 (최대 4개) -->
+            <div v-else class="feed-photo-grid">
               <img
                   v-for="img in feeds"
                   :key="img.id"
                   :src="img.image"
                   class="feed-photo"
+                  @click="goToFeedDetail(img.id)"
               />
             </div>
           </div>
@@ -209,8 +223,44 @@ const totalPoints = ref(0);
 function goToPointHistory() {
   router.push("/points");
 }
+
 // 내 피드
-const feeds = ref([]);
+const feeds = ref([]);           // 썸네일들
+const isLoadingFeeds = ref(false);
+const myUserId = ref(null);
+
+// 내 피드 프리뷰 로드 (최근 4개)
+const loadMyFeedPreview = async () => {
+  if (!myUserId.value) {
+    feeds.value = [];
+    return;
+  }
+
+  isLoadingFeeds.value = true;
+  try {
+    const res = await axios.get("http://localhost:8080/feeds/list", {
+      params: {
+        rows: 4,
+        authorId: myUserId.value,
+        cursor: undefined
+      },
+      withCredentials: true
+    });
+
+    const slice = res.data.data;
+    const items = slice?.items ?? [];
+
+    feeds.value = items.map((item) => ({
+      id: item.id,
+      image: item.thumbnailUrl || item.imageUrl || item.image || ""
+    }));
+  } catch (err) {
+    console.error("내 피드 프리뷰 로드 실패:", err);
+    feeds.value = [];
+  } finally {
+    isLoadingFeeds.value = false;
+  }
+};
 
 onMounted(async () => {
   try {
@@ -224,26 +274,31 @@ onMounted(async () => {
     Object.assign(user, data);
     totalPoints.value = res.data.totalPoints;
 
-    // 피드 (있으면 사용, 없으면 예시)
-    const userFeeds = data.feeds;
-    feeds.value = (userFeeds && userFeeds.length > 0)
-        ? userFeeds
-        : [
-          { id: 1, image: "/images/sample1.jpg" },
-          { id: 2, image: "/images/sample2.jpg" },
-          { id: 3, image: "/images/sample3.jpg" }
-        ];
+    //  마이페이지 응답에서 DB userId 뽑기
+    myUserId.value = data.userId ?? data.id ?? null;
+
+    // 내 피드 프리뷰 불러오기
+    await loadMyFeedPreview();
   } catch (err) {
     console.error("마이페이지 API 오류:", err);
-
-    // 예시 이미지 fallback
-    feeds.value = [
-      { id: 1, image: "/images/sample1.jpg" },
-      { id: 2, image: "/images/sample2.jpg" },
-      { id: 3, image: "/images/sample3.jpg" }
-    ];
+    feeds.value = [];
   }
 });
+
+const goToFeedDetail = (feedId) => {
+  if (!feedId) return;
+  router.push(`/feeds/${feedId}`);
+};
+
+const goToAllMyFeeds = () => {
+  if (!myUserId.value) return;
+  router.push({
+    path: '/feeds',
+    query: {
+      authorId: myUserId.value
+    }
+  });
+};
 
 // 모달 관련
 const showModal = ref(false);

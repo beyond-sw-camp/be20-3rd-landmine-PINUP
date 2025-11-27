@@ -31,7 +31,9 @@
       </div>
 
       <!-- 차단 버튼 -->
-      <button class="block-btn" @click="blockUser">차단하기</button>
+      <button class="block-btn" @click="toggleBlock">
+        {{ isBlocked ? "차단 해제" : "차단하기" }}
+      </button>
 
     </div>
   </div>
@@ -46,13 +48,15 @@ import router from "@/router/index.js";
 
 const route = useRoute();
 const userId = route.params.userId;
-
 const profile = ref({});
+const isBlocked = ref(false)
 
 const fetchProfile = async () => {
   try {
     const res = await axiosInstance.get(`/users/${userId}`);
     profile.value = res.data;
+    // 차단 여부
+    isBlocked.value = !!res.data.isBlocked;
   } catch (e) {
     console.error("프로필 조회 오류:", e);
     alert("프로필 정보를 불러올 수 없습니다.");
@@ -60,19 +64,30 @@ const fetchProfile = async () => {
 };
 
 // 차단 기능
-const blockUser = async () => {
-  const confirmBlock = confirm("해당 사용자를 차단하시겠습니까?");
-  if (!confirmBlock) return;
-
+const toggleBlock = async () => {
   try {
-    await axiosInstance.post(`/users/${userId}/block`);
-    alert("사용자를 차단했습니다.");
+    if (!isBlocked.value) {
+      // 차단하기
+      const confirmBlock = confirm("해당 사용자를 차단하시겠습니까?");
+      if (!confirmBlock) return;
 
-    // 새로고침 또는 뒤로가기
-    router.back();
+      await axiosInstance.post(`/users/${userId}/block`);
+      alert("사용자를 차단했습니다.");
+      isBlocked.value = true;
+
+    } else {
+      // 차단 해제
+      const confirmUnblock = confirm("해당 사용자 차단을 해제하시겠습니까?");
+      if (!confirmUnblock) return;
+
+      await axiosInstance.post(`/users/${userId}/unblock`);
+      alert("차단을 해제했습니다.");
+      isBlocked.value = false;
+    }
+
   } catch (e) {
-    console.error("차단 실패:", e);
-    alert("차단 처리 중 오류가 발생했습니다.");
+    console.error("차단/해제 실패:", e);
+    alert("처리 중 오류가 발생했습니다.");
   }
 };
 
