@@ -12,7 +12,8 @@ const router = useRouter()
 const { back } = useBack({ name: 'feeds' })
 const userStore = useUserDataStore()
 
-// ---------- 상태 ----------
+const REPORT_API_URL = null // TODO : 실제 API 주소 필요
+
 const feed = ref(null)
 const loading = ref(true)
 const error = ref('')
@@ -22,24 +23,23 @@ const reportDialogVisible = ref(false)
 const reportReason = ref('')
 const hasLiked = ref(false)
 
-// 라우트 파라미터
+const reportContent = ref('')
+const isReporting = ref(false)
+
 const feedId = computed(() => {
   const raw = route.params.feedId
   const num = Number(raw)
   return isNaN(num) ? null : num
 })
 
-// 현재 로그인 유저 id (라우터 가드 덕분에 여기 올 땐 이미 로그인 돼 있음)
 const currentUserId = computed(() => userStore.userId)
 
-// 작성자 여부
 const isAuthor = computed(() => {
   if (!feed.value) return false
   if (!currentUserId.value) return false
   return feed.value.authorId && feed.value.authorId === currentUserId.value
 })
 
-// 작성 시간 포맷
 const formattedCreatedAt = computed(() => {
   if (!feed.value || !feed.value.createdAt) return ''
   const d = new Date(feed.value.createdAt)
@@ -53,7 +53,6 @@ const formattedCreatedAt = computed(() => {
   })
 })
 
-// ---------- API 호출 ----------
 const loadFeedDetail = async () => {
   if (!feedId.value) {
     error.value = '잘못된 피드입니다.'
@@ -65,7 +64,6 @@ const loadFeedDetail = async () => {
   error.value = ''
 
   try {
-    // 상세 조회: GET /feeds/view/{feedId}
     const res = await api.get('/feeds/view/' + feedId.value)
     const data = res.data && res.data.data
     if (!data) throw new Error('응답에 data가 없습니다.')
@@ -91,11 +89,9 @@ const loadFeedDetail = async () => {
   }
 }
 
-// 좋아요
 const handleLike = async () => {
   if (!feed.value || hasLiked.value) return
 
-  // 여기까지 들어왔다는 것 자체가 라우터 가드에서 이미 로그인 검증 통과한 상태
   if (!currentUserId.value) {
     ElMessage.error('로그인 정보가 올바르지 않습니다. 다시 로그인해 주세요.')
     router.push({
@@ -132,24 +128,22 @@ const handleLike = async () => {
   }
 }
 
-// ✨ 수정
 const handleEdit = () => {
   if (!feed.value) return
 
-  // 프론트에서도 한 번 더 방어
   if (!isAuthor.value) {
     ElMessage.warning('본인 피드만 수정할 수 있습니다.')
     return
   }
 
-  // /feeds/:feedId/edit 라우트로 이동
-  router.push({
-    name: 'feed-edit',
-    params: { feedId: feed.value.id },
-  }).catch(() => {})
+  router
+      .push({
+        name: 'feed-edit',
+        params: { feedId: feed.value.id },
+      })
+      .catch(() => {})
 }
 
-// 삭제
 const handleDelete = () => {
   if (!feed.value) return
   if (!isAuthor.value) {
@@ -172,50 +166,70 @@ const confirmDelete = async () => {
   }
 }
 
-// 신고 창 열기
+const resetReportForm = () => {
+  reportContent.value = ''
+  isReporting.value = false
+}
+
 const handleReport = () => {
   if (!feed.value) return
+  resetReportForm()
   reportDialogVisible.value = true
 }
 
 // 신고 제출
 const confirmReport = async () => {
-  if (!reportReason.value.trim()) {
-    ElMessage.warning('신고 사유를 입력해주세요.')
+  if (!feed.value) return
+  if (!currentUserId.value) {
+    ElMessage.error('로그인 후 신고할 수 있습니다.')
     return
   }
 
+  const content = reportContent.value.trim()
+  if (!content) {
+    ElMessage.warning('신고 내용을 입력해 주세요.')
+    return
+  }
+
+
+  isReporting.value = true
+
   try {
-    const reportData = {
-      userId: currentUserId.value,
-      feedId: feedId.value,
-      reason: reportReason.value,
+    const payload = {
+      authorId: feed.value.authorId,      // 피드 작성자
+      userId: currentUserId.value,       // 신고자
+      feedId: feed.value.id,             // 피드 PK
+      content,                           // 신고 내용
     }
-    await submitReport(reportData)
-    ElMessage.success('피드가 정상적으로 신고되었습니다.')
-    closeReportDialog()
-  } catch (error) {
-    console.error('신고 처리 실패:', error)
+
+    if(REPORT_API_URL == null){
+      ElMessage.error('REPORT_API_URL 입력 필요')
+      return
+    }
+
+    await api.post(REPORT_API_URL, payload)
+
+    ElMessage.success('신고가 접수되었습니다.')
+    reportDialogVisible.value = false
+    resetReportForm()
+  } catch (e) {
+    console.error('신고 실패:', e)
     ElMessage.error('신고 처리 중 오류가 발생했습니다.')
+  } finally {
+    isReporting.value = false
   }
 }
 
-// 신고 창 닫기 (및 초기화)
-const closeReportDialog = () => {
-  reportDialogVisible.value = false
-  reportReason.value = ''
-}
-
-// 닉네임 클릭시 상대 프로필 조회로 이동
 const goToUserProfile = () => {
   if (!feed.value || !feed.value.authorId) return
 
-  router.push({
-    path: `/users/${feed.value.authorId}`
-  }).catch(() => {})
+  router
+      .push({
+        path: `/users/${feed.value.authorId}`,
+      })
+      .catch(() => {})
 }
 
-// 라우터 가드에서 이미 ensureLoggedIn() 호출됨 → 여기서는 상세만 불러오면 됨
 onMounted(async () => {
   await loadFeedDetail()
 })
@@ -233,15 +247,10 @@ onMounted(async () => {
         <span>피드 상세</span>
       </div>
 
-      <!-- 오른쪽 상단: 수정/삭제 또는 신고 -->
       <div class="feed-top-right">
         <template v-if="isAuthor">
-          <button type="button" class="edit-btn" @click="handleEdit">
-            수정
-          </button>
-          <button type="button" class="delete-btn" @click="handleDelete">
-            삭제
-          </button>
+          <button type="button" class="edit-btn" @click="handleEdit">수정</button>
+          <button type="button" class="delete-btn" @click="handleDelete">삭제</button>
         </template>
         <button
             v-else
@@ -328,23 +337,26 @@ onMounted(async () => {
       <el-dialog
           v-model="reportDialogVisible"
           title="피드 신고"
-          width="380px"
-          @closed="closeReportDialog"
+          width="480px"
       >
-        <div class="report-dialog-content">
-          <p>이 피드를 신고하는 이유를 작성해주세요.</p>
-          <el-input
-              v-model="reportReason"
-              type="textarea"
-              :rows="4"
-              placeholder="예: 부적절한 콘텐츠, 스팸, 명예훼손 등"
-              maxlength="200"
-              show-word-limit
+        <div class="report-dialog-body">
+          <h3 class="report-title">신고 내용</h3>
+          <textarea
+              v-model="reportContent"
+              class="report-textarea"
+              placeholder="신고 사유를 자세히 입력해 주세요."
           />
         </div>
+
         <template #footer>
-          <el-button @click="closeReportDialog">취소</el-button>
-          <el-button type="primary" @click="confirmReport">신고하기</el-button>
+          <el-button @click="reportDialogVisible = false">취소</el-button>
+          <el-button
+              type="primary"
+              :loading="isReporting"
+              @click="confirmReport"
+          >
+            신고하기
+          </el-button>
         </template>
       </el-dialog>
     </div>
@@ -354,11 +366,34 @@ onMounted(async () => {
 <style src="@/assets/styles/feeds.css" />
 
 <style scoped>
-.report-dialog-content p {
-  margin-top: 0;
-  margin-bottom: 12px;
+.report-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.report-textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  resize: vertical;
   font-size: 14px;
-  color: #606266;
+  line-height: 1.4;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.report-textarea:focus {
+  border-color: #409eff;
 }
 </style>
+
 
