@@ -35,7 +35,6 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { koreaGeoJson } from "@/data/provinces.js";
 
 const mapContainer = ref(null);
 const hoveredProvince = ref(null);
@@ -93,10 +92,7 @@ const zoomOut = () => {
 };
 
 const resolveGeoJson = () => {
-  if (typeof window === "undefined") {
-    return koreaGeoJson;
-  }
-  return window.statesData ?? koreaGeoJson;
+  return window.statesData;
 };
 
 const getFeatureName = (feature) =>
