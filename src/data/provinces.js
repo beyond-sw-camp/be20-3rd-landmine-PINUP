@@ -38,7 +38,7 @@ export const PROVINCES = [
     id: "seoul",
     name: "서울",
     bounds: { west: 126.8, east: 127.1, south: 37.45, north: 37.7 },
-    heroImage: "/images/sample1.jpg",
+    heroImage: "/images/seoul_backgound.png",
     items: baseItems
   },
   {

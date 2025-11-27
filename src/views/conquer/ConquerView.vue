@@ -70,6 +70,7 @@ import ConquerApi from "@/api/ConquerApi.js";
 
 const sessionId = ref(null);
 const startCoords = ref(null);
+const startRegionText = ref("시작 지점을 선택해주세요");
 const endCoords = ref(null);
 const statusMessage = ref("");
 const statusType = ref("info");
@@ -113,10 +114,15 @@ const formatCoords = (coords, emptyMessage) => {
   return `${lat}, ${lng}`;
 };
 
+const formatRegionText = (depth1, depth2, depth3) => {
+  const parts = [depth1, depth2, depth3].filter((text) => text && text.trim().length);
+  return parts.length ? parts.join(", ") : "시작 지점을 선택해주세요";
+};
+
 const currentScene = computed(() => SCENE_VARIANTS[conquestState.value] ?? SCENE_VARIANTS.idle);
 
 const missionPlan = computed(() => [
-  { label: "점령 시작 위치", value: formatCoords(startCoords.value, "시작 지점을 선택해주세요") },
+  { label: "점령 시작 위치", value: startRegionText.value },
   {
     label: "진행 상태",
     value:
@@ -219,6 +225,7 @@ const resetConquest = () => {
   sessionId.value = null;
   startCoords.value = null;
   endCoords.value = null;
+  startRegionText.value = "시작 지점을 선택해주세요";
   setStatus("", "info");
   setConquestState("idle");
 };
@@ -238,10 +245,15 @@ const startConquest = async () => {
       longitude: coordsPayload.longitude
     });
     sessionId.value = data?.sessionId ?? null;
+    startRegionText.value = formatRegionText(
+      data?.regionDepth1,
+      data?.regionDepth2,
+      data?.regionDepth3
+    );
     startCoords.value = coordsPayload;
     endCoords.value = null;
     setConquestState("running");
-    setStatus("점령을 시작했습니다. 안전 운행하세요!", "success");
+    setStatus("점령을 시작했습니다!", "success");
   } catch (error) {
     console.error("Failed to start conquest", error);
     setStatus(error?.response?.data?.message ?? error.message ?? "점령을 시작할 수 없습니다.", "error");

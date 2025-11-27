@@ -132,7 +132,7 @@ const loadItems = async () => {
     items.value = content.map((item, idx) => ({
       itemId: item.itemId ?? item.id ?? idx,
       name: item.itemName ?? item.name ?? `아이템 ${idx + 1}`,
-      image: item.imageUrl ?? item.image ?? "/images/sample1.jpg",
+      image: item.imageUrl ?? item.image ?? "/images/seoul_backgound.png",
       isEquipped: item.isEquipped ?? false,
       coordinates: item.coordinates ?? null
     }));

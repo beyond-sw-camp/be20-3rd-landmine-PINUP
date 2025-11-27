@@ -133,9 +133,27 @@ const formatDate = (d) => {
 // });
 
 const conquer = ref({
-  total: 100,
-  monthly: 55
+  total: 0,
+  monthly: 0
 });
+
+const loadConquerStats = async () => {
+  try {
+    const [totalRes, monthlyRes] = await Promise.all([
+      axios.get("http://localhost:8080/conquer/stats/total", {
+        withCredentials: true
+      }),
+      axios.get("http://localhost:8080/conquer/stats/monthly", {
+        withCredentials: true
+      })
+    ]);
+
+    conquer.value.total = totalRes.data ?? 0;
+    conquer.value.monthly = monthlyRes.data ?? 0;
+  } catch (e) {
+    console.error("정복 통계 조회 실패", e);
+  }
+};
 
 // 사용자 정보 가져오기
 const user = ref(null);
@@ -165,6 +183,7 @@ const loadUser = async () => {
 
 onMounted(() => {
   loadUser();
+  loadConquerStats();
 });
 
 // 랭킹 가져오기
