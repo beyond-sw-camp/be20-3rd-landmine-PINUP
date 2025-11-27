@@ -260,3 +260,24 @@ PIN-UP은 사용자가 실제 방문한 지역을
   ![feedlike-successimg](https://github.com/user-attachments/assets/0dbed72a-490d-47be-9772-8fff00eb7728)
 
 </details>
+
+<details>
+  <summary>상점</summary>
+
+- 아이템 등록<br>
+  
+ 
+- 아이템 수정<br>
+
+
+- 아이템 삭제<br>
+ 
+
+- 아이템 기간한정+최신 조회<br>
+ 
+
+- 아이템 전체 조회<br>
+
+
+</details>
+
