@@ -606,7 +606,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .popup {
