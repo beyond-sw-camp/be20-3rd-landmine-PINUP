@@ -265,8 +265,8 @@ PIN-UP은 사용자가 실제 방문한 지역을
   <summary>상점</summary>
 
 - 아이템 등록<br>
-  
- 
+  https://github.com/user-attachments/assets/12e65c05-ff03-4ed5-9423-35fd25df7546
+
 - 아이템 수정<br>
 
 
