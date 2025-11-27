@@ -69,14 +69,29 @@ const routes = [
             { path: 'ranking', name: 'ranking', component: MonthlyRankingView},
             // feeds
             {
-                path: '/feeds',
-                name : 'feeds',
-                component : FeedsHomeView
+                path: 'feeds',
+                name: 'feeds',
+                component: FeedsHomeView,
             },
             {
                 path: 'feeds/write',
                 name: 'feeds-write',
-                component: FeedsWriteView
+                component: FeedsWriteView,
+                meta: { requiresAuth: true },
+            },
+            {
+                path: 'feeds/:feedId',
+                name: 'feed-detail',
+                component: () => import('@/views/feeds/FeedDetailView.vue'),
+                props: true,
+                meta: { requiresAuth: true },
+            },
+            {
+                path: 'feeds/:feedId/edit',
+                name: 'feed-edit',
+                component: () => import('@/views/feeds/FeedsEditView.vue'),
+                props: true,
+                meta: { requiresAuth: true },
             },
 
             { path: 'store', name: 'store-home', component: StoreHomeView
