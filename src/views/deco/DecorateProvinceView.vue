@@ -66,6 +66,7 @@
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import DecorateApi from "@/api/DecorateApi.js";
+import {PROVINCES} from "@/api/provinces.js";
 
 const props = defineProps({
   provinceId: {
