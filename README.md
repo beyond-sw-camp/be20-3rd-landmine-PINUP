@@ -310,3 +310,17 @@ PIN-UP은 사용자가 실제 방문한 지역을
   - 사용자 알림<br>
   ![알림](https://github.com/user-attachments/assets/4740e163-f1f8-4cf0-8a73-c3610b872587)
 </details>
+
+<details>
+  <summary>점령하기 - 점령지 추가</summary>
+
+- 점령하기 - 점령지 추가<br>
+  ![점령하기 기능.gif](../../Downloads/%EC%A0%90%EB%A0%B9%ED%95%98%EA%B8%B0%20%EA%B8%B0%EB%8A%A5.gif)
+</details>
+
+<details>
+  <summary>점령하기 - 포인트 획득</summary>
+  ![Screen-Recording-2025-11-27-at-10.50.36 AM_2.gif](../../Downloads/Screen-Recording-2025-11-27-at-10.50.36%E2%80%AFAM_2.gif)
+- 점령하기 - 포인트 획득<br>
+  
+</details>
